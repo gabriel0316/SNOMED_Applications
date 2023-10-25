@@ -7,8 +7,8 @@ public class CreateDatabaseAndImportData {
 	
 	// Driver needed to connect to the SNOMED database
 	public static Connection conn = null;
-	static String ReleaseFilePathCH= "C:\\Users\\Pero Grgic\\Desktop\\eHS\\SnomedCT_ManagedServiceCH_PRODUCTION_CH1000195_20230607T120000Z";
-	static String ReleaseFilePath= "C:\\Users\\Pero Grgic\\Desktop\\eHS\\SnomedCT_InternationalRF2_PRODUCTION_20231001T120000Z";
+	static String ReleaseFilePathCH= "PATH_TO_RELEASE_FILES_SWISS_EXTENSION";
+	static String ReleaseFilePath= "PATH_TO_RELEASE_FILES_INTERNATIONAL_EDITION";
 	static String ReleaseDate="20231001";
 	static String ReleaseDateCH="CH1000195_20230607";
 
