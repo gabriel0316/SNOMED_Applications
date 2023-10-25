@@ -13,10 +13,10 @@ import javax.swing.SwingUtilities;
  */
 public class Main {
 
-	private static String CSVfilePath = "C:\\Users\\Pero Grgic\\Desktop\\eHS\\SNOMED\\translationOverview\\MikroorganismenRefset.tsv";
+	private static String CSVfilePath = "///Path to the CSV file///";
 	
 	//Path where to create the three files (identicalTranslation, newSynonym, noTranslation)
-	private static String destination ="C:\\Users\\Pero Grgic\\Desktop\\eHS\\SNOMED\\Prüfen FR Terme\\Substanzen AF\\Compared\\DE";
+	private static String destination ="///PATH///";
 
 	public static long totalTime;
 	
