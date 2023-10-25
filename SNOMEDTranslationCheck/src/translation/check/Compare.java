@@ -40,6 +40,7 @@ public class Compare {
 	 * @param language_reference_set Reference set the translated term belongs to
 	 * @param acceptabilityId Acceptability of the translated term
 	 */
+	
 	public void setNewTranslations (String conceptId, String fsn, String pt, String term, String language_Code, String case_Significance, String language_reference_set, String acceptabilityId){
 		List<String> L = new ArrayList<String>();
 		L.add(conceptId);

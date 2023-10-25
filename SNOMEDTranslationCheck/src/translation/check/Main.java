@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.swing.SwingUtilities;
 
+
 /**
  * Executes the all necessary classes to compare the terms of the CSV with the SNOMED database.
  * @author Pero Grgic

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+
 /**
  * This class reads the prepared CSV file and fills the lists of the compare class.
  * @author Pero Grgic

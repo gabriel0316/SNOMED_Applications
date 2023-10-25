@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
 /**
  * This class connects to the SNOMED database and retrieves the translation in the corresponding language.
  * @author Pero Grgic
