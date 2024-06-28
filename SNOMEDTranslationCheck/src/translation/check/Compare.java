@@ -392,7 +392,7 @@ public class Compare {
 		System.out.println("File nach gewünschter Struktur strukturiert. Dauer: "+elapsedTime);
 		
 		//Creates the TranslationOverview file.
-		File translationOverviewFile = new File(destination+"\\TranslationOverview.tsv");
+		File translationOverviewFile = new File(destination+"\\TranslationOverview.csv");
 		translationOverviewFile.createNewFile();			
 		FileWriter writer = new FileWriter(translationOverviewFile);
 		System.out.println("File in erstellt und starte mit Befüllung.");
