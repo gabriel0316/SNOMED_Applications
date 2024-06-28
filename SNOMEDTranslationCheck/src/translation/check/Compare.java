@@ -56,6 +56,13 @@ public class Compare {
 		Compare.language = language_Code; 
 	}
 	
+	//For method overloading. Allowing to just read the SCT ID form a file.
+	public void setNewTranslations (String conceptId){
+		List<String> L = new ArrayList<String>();
+		L.add(conceptId);
+		Compare.newTranslation.add(L);
+	}
+	
 	public void setOldTranslation (String conceptId, String term, String translationId, String acceptabilityId){
 		List<String> L = new ArrayList<String>();
 		L.add(conceptId);
@@ -65,6 +72,7 @@ public class Compare {
 		Compare.oldTranslation.add(L);
 	}
 	
+	//Used to create overview file with content from the DB
 	public void setTranslationOverview (String conceptId, String term, String typeId, String languageCode) {
 		List<String> L = new ArrayList<String>();
 		L.add(conceptId);
@@ -295,7 +303,7 @@ public class Compare {
 		
 		//removes duplicates from the given CSV. This reduces the times the SQL-query needs to be executed.
 		List <List<String>> newTranslationCleaned = removeDuplicates(newTranslation);
-		newTranslationCleaned.remove(0);
+//		newTranslationCleaned.remove(0);
 		
 		
 		long start = System.currentTimeMillis();    

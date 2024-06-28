@@ -7,14 +7,14 @@ public class CreateDatabaseAndImportData {
 	
 	// Driver needed to connect to the SNOMED database
 	public static Connection conn = null;
-	static String ReleaseFilePathCH= "C:\\Users\\Pero Grgic\\Desktop\\eHS\\SnomedCT_ManagedServiceCH_PRODUCTION_CH1000195_20230607T120000Z";
-	static String ReleaseFilePath= "C:\\Users\\Pero Grgic\\Desktop\\eHS\\SnomedCT_InternationalRF2_PRODUCTION_20231001T120000Z";
-	static String ReleaseDate="20231001";
-	static String ReleaseDateCH="CH1000195_20230607";
+	static String ReleaseFilePathCH= "PATH_SWSS_EXTENSION";
+	static String ReleaseFilePath= "PATH_INTERNATIONAL_EDITION";
+	static String ReleaseDate="RELEASE_DATE_INTERNATIONAL_EDITION";
+	static String ReleaseDateCH="CH1000195_+RELEASEDATE_SWISS_EXTENSION";
 
 	    public static void main(String[] args) {
 	        // Datenbankverbindung konfigurieren
-	        String dbName = "ch:sct-june23";
+	        String dbName = "NAME_OF_DATABASE";
 	        String jdbcDriver = "com.mysql.jdbc.Driver";
 	    	
 	    	
@@ -22,12 +22,14 @@ public class CreateDatabaseAndImportData {
 	    	String dbUser = "root";
 	    	String dbPassword = "";
 	    	String dbURL = "jdbc:mysql://localhost/";
+	    	String multiQueries="?allowMultiQueries=true";
+
 
 	        try {
 	            // Verbindung zur Datenbank herstellen
-//	        	Class.forName(jdbcDriver);
-//	            Connection connection = DriverManager.getConnection(dbURL, dbUser, dbPassword);
-//	            Statement statement = connection.createStatement();
+	        	Class.forName(jdbcDriver);
+	            Connection connection = DriverManager.getConnection(dbURL + multiQueries, dbUser, dbPassword);
+	            Statement statement = connection.createStatement();
 
 	            // Datenbank erstellen
 	            String createDBQuery = "DROP DATABASE IF EXISTS `" + dbName + "`;" + "\n"
@@ -37,12 +39,12 @@ public class CreateDatabaseAndImportData {
 	                    + "SET GLOBAL net_read_timeout = 120;" + "\n"
 	                    + "SET GLOBAL sql_mode = '';" + "\n"
 	                    + "SET SESSION sql_mode = '';";
-	           // statement.executeUpdate(createDBQuery);
-	            System.out.println(createDBQuery);
+	            statement.executeUpdate(createDBQuery);
+//	            System.out.println(createDBQuery);
 
 	            // Verbindung zur neuen Datenbank herstellen
-//	            connection = DriverManager.getConnection(dbURL + dbName, dbUser, dbPassword);
-//	            statement = connection.createStatement();
+	            connection = DriverManager.getConnection(dbURL + dbName+ multiQueries, dbUser, dbPassword);
+	            statement = connection.createStatement();
 
 	            // Tabelle erstellen und Daten aus Dateien auf dem Desktop importieren
 	            String createConceptTableQuery = "DROP TABLE IF EXISTS `full_concept`;\r\n"
@@ -55,8 +57,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "    `definitionStatusId` BIGINT NOT NULL DEFAULT  0,\r\n"
 	            		+ "    PRIMARY KEY (`id`,`effectiveTime`))\r\n"
 	            		+ "    ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;";
-//	            statement.executeUpdate(createConceptTableQuery);
-	            System.out.println(createConceptTableQuery);
+	            statement.executeUpdate(createConceptTableQuery);
+//	            System.out.println(createConceptTableQuery);
 
 	            
 	            String createDescriptionTableQuery = "DROP TABLE IF EXISTS `full_description`;\r\n"
@@ -73,8 +75,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "    `caseSignificanceId` BIGINT NOT NULL DEFAULT  0,\r\n"
 	            		+ "    PRIMARY KEY (`id`,`effectiveTime`))\r\n"
 	            		+ "    ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;";
-//	            statement.executeUpdate(createDescriptionTableQuery);
-	            System.out.println(createDescriptionTableQuery);
+	            statement.executeUpdate(createDescriptionTableQuery);
+//	            System.out.println(createDescriptionTableQuery);
 
 	            
 	            String createRelationshipTableQuery = "DROP TABLE IF EXISTS `full_relationship`;\r\n"
@@ -92,8 +94,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "    `modifierId` BIGINT NOT NULL DEFAULT  0,\r\n"
 	            		+ "    PRIMARY KEY (`id`,`effectiveTime`))\r\n"
 	            		+ "    ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;";
-//	            statement.executeUpdate(createRelationshipTableQuery);
-	            System.out.println(createRelationshipTableQuery);
+	            statement.executeUpdate(createRelationshipTableQuery);
+//	            System.out.println(createRelationshipTableQuery);
 
 	            
 	            String createSimpleRefsetTableQuery = "DROP TABLE IF EXISTS `full_refset_Simple`;\r\n"
@@ -108,8 +110,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "  `referencedComponentId` BIGINT NOT NULL DEFAULT  0,\r\n"
 	            		+ "  PRIMARY KEY (`id`,`effectiveTime`))\r\n"
 	            		+ "  ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;";
-//	            statement.executeUpdate(createSimpleRefsetTableQuery);
-	            System.out.println(createSimpleRefsetTableQuery);
+	            statement.executeUpdate(createSimpleRefsetTableQuery);
+//	            System.out.println(createSimpleRefsetTableQuery);
 
 	            
 	            String createExtendedMapRefsetTableQuery = "DROP TABLE IF EXISTS `full_refset_ExtendedMap`;\r\n"
@@ -131,8 +133,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "  `mapCategoryId` BIGINT NOT NULL DEFAULT  0,\r\n"
 	            		+ "  PRIMARY KEY (`id`,`effectiveTime`))\r\n"
 	            		+ "  ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;";
-//	            statement.executeUpdate(createExtendedMapRefsetTableQuery);
-	            System.out.println(createExtendedMapRefsetTableQuery);
+	            statement.executeUpdate(createExtendedMapRefsetTableQuery);
+//	            System.out.println(createExtendedMapRefsetTableQuery);
 
 	            
 	            String createLanguageRefsetTableQuery = "DROP TABLE IF EXISTS `full_refset_Language`;\r\n"
@@ -148,8 +150,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "  `acceptabilityId` BIGINT NOT NULL DEFAULT  0,\r\n"
 	            		+ "  PRIMARY KEY (`id`,`effectiveTime`))\r\n"
 	            		+ "  ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;";
-//	            statement.executeUpdate(createLanguageRefsetTableQuery);
-	            System.out.println(createLanguageRefsetTableQuery);
+	            statement.executeUpdate(createLanguageRefsetTableQuery);
+//	            System.out.println(createLanguageRefsetTableQuery);
 
 	            
 	            String createModuleDependencyRefsetTableQuery = "DROP TABLE IF EXISTS `full_refset_ModuleDependency`;\r\n"
@@ -168,8 +170,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "        DEFAULT  '2000-01-31 00:00:00',\r\n"
 	            		+ "  PRIMARY KEY (`id`,`effectiveTime`))\r\n"
 	            		+ "  ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;";
-//	            statement.executeUpdate(createModuleDependencyRefsetTableQuery);
-	            System.out.println(createModuleDependencyRefsetTableQuery);
+	            statement.executeUpdate(createModuleDependencyRefsetTableQuery);
+//	            System.out.println(createModuleDependencyRefsetTableQuery);
 
 
 	            //Import of the international Edition
@@ -178,8 +180,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`definitionStatusId`);";
-//	            statement.executeUpdate(importConceptsIntEdQuery);
-	            System.out.println(importConceptsIntEdQuery);
+	            statement.executeUpdate(importConceptsIntEdQuery);
+//	            System.out.println(importConceptsIntEdQuery);
 
 	            
 	            String importDescriptionIntEdQuery = "LOAD DATA LOCAL INFILE '"+ReleaseFilePath+"\\Full\\Terminology\\sct2_Description_Full-en_INT_"+ReleaseDate+".txt'\r\n"
@@ -187,8 +189,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`conceptId`,`languageCode`,`typeId`,`term`,`caseSignificanceId`);";
-//	            statement.executeUpdate(importDescriptionIntEdQuery);
-	            System.out.println(importDescriptionIntEdQuery);
+	            statement.executeUpdate(importDescriptionIntEdQuery);
+//	            System.out.println(importDescriptionIntEdQuery);
 
 	            
 	            String importRelationshipIntEdQuery = "LOAD DATA LOCAL INFILE '"+ReleaseFilePath+"\\Full\\Terminology\\sct2_Relationship_Full_INT_"+ReleaseDate+".txt'\r\n"
@@ -196,8 +198,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`sourceId`,`destinationId`,`relationshipGroup`,`typeId`,`characteristicTypeId`,`modifierId`);";
-//	            statement.executeUpdate(importRelationshipIntEdQuery);
-	            System.out.println(importRelationshipIntEdQuery);
+	            statement.executeUpdate(importRelationshipIntEdQuery);
+//	            System.out.println(importRelationshipIntEdQuery);
 
 //	            The international Edition does not have a simple refset
 //	            String importSimpleRefsetIntEdQuery = "LOAD DATA LOCAL INFILE '"+ReleaseFilePath+"\\Full\\Content\\der2_Refset_SimpleFull_INT_"+ReleaseDate+".txt'\r\n"
@@ -214,8 +216,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`refsetId`,`referencedComponentId`,`acceptabilityId`);";
-//	            statement.executeUpdate(importLanguageRefsetsIntEdQuery);
-	            System.out.println(importLanguageRefsetsIntEdQuery);
+	            statement.executeUpdate(importLanguageRefsetsIntEdQuery);
+//	            System.out.println(importLanguageRefsetsIntEdQuery);
 	            
 //	            TODO: beim Ausführen macht mapGroup ein Problem. 
 //	            String importExtendedMapRefsetsIntEdQuery = "LOAD DATA LOCAL INFILE '"+ReleaseFilePath+"\\Full\\Refset\\Map\\der2_iisssccRefset_ExtendedMapFull_INT_"+ReleaseDate+".txt'\r\n"
@@ -232,48 +234,48 @@ public class CreateDatabaseAndImportData {
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`definitionStatusId`);";
-//	            statement.executeUpdate(importConceptsCHdQuery);
-	            System.out.println(importConceptsCHdQuery);
+	            statement.executeUpdate(importConceptsCHdQuery);
+//	            System.out.println(importConceptsCHdQuery);
 	            
 	            String importDescriptionDeCHQuery= "LOAD DATA LOCAL INFILE '"+ReleaseFilePathCH+"\\Full\\Terminology\\sct2_Description_Full-de-ch_"+ReleaseDateCH+".txt'\r\n"
 	            		+ "INTO TABLE `full_description`\r\n"
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`conceptId`,`languageCode`,`typeId`,`term`,`caseSignificanceId`);";
-//	            statement.executeUpdate(importDescriptionDeCHQuery);
-	            System.out.println(importDescriptionDeCHQuery);
+	            statement.executeUpdate(importDescriptionDeCHQuery);
+//	            System.out.println(importDescriptionDeCHQuery);
 	            
 	            String importDescriptionFrCHQuery= "LOAD DATA LOCAL INFILE '"+ReleaseFilePathCH+"\\Full\\Terminology\\sct2_Description_Full-fr-ch_"+ReleaseDateCH+".txt'\r\n"
 	            		+ "INTO TABLE `full_description`\r\n"
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`conceptId`,`languageCode`,`typeId`,`term`,`caseSignificanceId`);";
-//	            statement.executeUpdate(importDescriptionFrCHQuery);
-	            System.out.println(importDescriptionFrCHQuery);
+	            statement.executeUpdate(importDescriptionFrCHQuery);
+//	            System.out.println(importDescriptionFrCHQuery);
 	            
 	            String importDescriptionItCHQuery= "LOAD DATA LOCAL INFILE '"+ReleaseFilePathCH+"\\Full\\Terminology\\sct2_Description_Full-it-ch_"+ReleaseDateCH+".txt'\r\n"
 	            		+ "INTO TABLE `full_description`\r\n"
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`conceptId`,`languageCode`,`typeId`,`term`,`caseSignificanceId`);";
-//	            statement.executeUpdate(importDescriptionItCHQuery);
-	            System.out.println(importDescriptionItCHQuery);
+	            statement.executeUpdate(importDescriptionItCHQuery);
+//	            System.out.println(importDescriptionItCHQuery);
 	            
 	            String importDescriptionEnCHQuery= "LOAD DATA LOCAL INFILE '"+ReleaseFilePathCH+"\\Full\\Terminology\\sct2_Description_Full-en_"+ReleaseDateCH+".txt'\r\n"
 	            		+ "INTO TABLE `full_description`\r\n"
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`conceptId`,`languageCode`,`typeId`,`term`,`caseSignificanceId`);";
-//	            statement.executeUpdate(importDescriptionEnCHQuery);
-	            System.out.println(importDescriptionEnCHQuery);
+	            statement.executeUpdate(importDescriptionEnCHQuery);
+//	            System.out.println(importDescriptionEnCHQuery);
 	            
 	            String importRelationshipCHQuery= "LOAD DATA LOCAL INFILE '"+ReleaseFilePathCH+"\\Full\\Terminology\\sct2_Relationship_Full_"+ReleaseDateCH+".txt'\r\n"
 	            		+ "INTO TABLE `full_relationship`\r\n"
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`sourceId`,`destinationId`,`relationshipGroup`,`typeId`,`characteristicTypeId`,`modifierId`);";
-//	            statement.executeUpdate(importRelationshipCHQuery);
-	            System.out.println(importRelationshipCHQuery);
+	            statement.executeUpdate(importRelationshipCHQuery);
+//	            System.out.println(importRelationshipCHQuery);
 	            
 	            //The swiss extension does not contain a simple refset
 //	            String importSimpleRefsetCHQuery= "LOAD DATA LOCAL INFILE '"+ReleaseFilePathCH+"\\Full\\Content\\der2_Refset_SimpleFull_INT_"+ReleaseDateCH+".txt'\r\n"
@@ -288,8 +290,8 @@ public class CreateDatabaseAndImportData {
 	            		+ "LINES TERMINATED BY '\\r\\n'\r\n"
 	            		+ " IGNORE 1 LINES\r\n"
 	            		+ "(`id`,`effectiveTime`,`active`,`moduleId`,`refsetId`,`referencedComponentId`,`acceptabilityId`);";
-//	            statement.executeUpdate(importLanguageRefsetsDeCHQuery);
-	            System.out.println(importLanguageRefsetsDeCHQuery);
+	            statement.executeUpdate(importLanguageRefsetsDeCHQuery);
+//	            System.out.println(importLanguageRefsetsDeCHQuery);
 	            
 	            String importLanguageRefsetsFrCHQuery= "LOAD DATA LOCAL INFILE '"+ReleaseFilePathCH+"\\Full\\Refset\\Language\\der2_cRefset_LanguageFull-fr-ch_"+ReleaseDateCH+".txt'\r\n"
 	            		+ "INTO TABLE `full_refset_Language`\r\n"
