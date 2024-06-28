@@ -22,7 +22,7 @@ public class DB_conncetion {
 	//Credential for the connection
 	static String username = "root";
 	static String password = "";
-	static String serverUrl = "jdbc:mysql://localhost/NAME_OF_DATABASE";
+	static String serverUrl = "jdbc:mysql://localhost/ch:sct-june23";
 	static Compare concept = new Compare();
 
 	/**
