@@ -45,8 +45,6 @@ public class ReadTranslation {
 	            // Skip the first 4 rows
 	            csvReader.skip(4);
 	                
-	            //TODO: im propcsv notwendige cells: 1 code, 2 display,3 des de, 4 des fr, 5 des it, 6 des rm, 7 des en
-
 	            // Loop through each row of data
 	            for (String[] row : csvReader) {
 	            	String lang = null;

@@ -3,9 +3,6 @@ package translation.check;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import javax.swing.SwingUtilities;
-
-
 /**
  * Executes the all necessary classes to compare the terms of the CSV with the SNOMED database.
  * @author Pero Grgic
@@ -13,9 +10,9 @@ import javax.swing.SwingUtilities;
  */
 public class Main {
 
-	private static String CSVfilePath = "PATH_TO_THE_CSV";
+	private static String CSVfilePath = "PATH_TO_FILE";
 	//Path where to create the three files (identicalTranslation, newSynonym, noTranslation)
-	private static String destination ="PATH_TO_THE_DESTINATION_WHERE_TO_CREATE_THE_FILES";
+	private static String destination ="PATH_TO_DESTINATION";
 
 	public static long totalTime;
 	
