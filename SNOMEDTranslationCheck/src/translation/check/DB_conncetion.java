@@ -16,13 +16,13 @@ import java.sql.Statement;
 public class DB_conncetion {
 
 	// Driver needed to connect to the SNOMED database
-    static String jdbcDriver = "com.mysql.jdbc.Driver";
+    static String jdbcDriver = "com.mysql.cj.jdbc.Driver";
 	public static Connection conn = null;
 	
 	//Credential for the connection
 	static String username = "root";
 	static String password = "";
-	static String serverUrl = "jdbc:mysql://localhost/NAME_OF_DATABASE";
+	static String serverUrl = "jdbc:mysql://localhost/DATABASE_NAME?useUnicode=true&characterEncoding=UTF-8";
 	static Compare concept = new Compare();
 
 	/**
@@ -60,15 +60,11 @@ public class DB_conncetion {
 		    Statement stmt = conn.createStatement();
 		    ResultSet rs = stmt.executeQuery(queryGetDETerms);   		    
             while (rs.next()) {
-            	
             	String queryGetAcceptability = "SELECT `acceptabilityId` FROM `full_refset_Language` WHERE `referencedComponentId` ="+rs.getString("id");
         		Statement AccStmt = conn.createStatement();
         		ResultSet AccRs = AccStmt.executeQuery(queryGetAcceptability); 
         		AccRs.next();
-            	//The encoding form MySQL is in ISO-8859-1. Before we can compare the two lists we have to make sure the ISO-8859-1 gets converted to UTF-8
-            	String encodedWithISO88591 = rs.getString("term");
-            	String decodedToUTF8 = new String(encodedWithISO88591.getBytes("ISO-8859-1"), "UTF-8");
-            	concept.setOldTranslation(rs.getString("conceptId"), decodedToUTF8, rs.getString("id"), AccRs.getString("acceptabilityId"));
+            	concept.setOldTranslation(rs.getString("conceptId"), rs.getString("term"), rs.getString("id"), AccRs.getString("acceptabilityId"));
 				}
             }
 			
@@ -76,31 +72,21 @@ public class DB_conncetion {
 	        Statement stmt = conn.createStatement();
 	        ResultSet rs = stmt.executeQuery(queryGetFRTerms);
 	        while (rs.next()) {
-	        	
 	        	String queryGetAcceptability = "SELECT `acceptabilityId` FROM `full_refset_Language` WHERE `referencedComponentId` ="+rs.getString("id");
         		Statement AccStmt = conn.createStatement();
         		ResultSet AccRs = AccStmt.executeQuery(queryGetAcceptability);
-	        	
-	        	//The encoding form MySQL is in ISO-8859-1. Before we can compare the two lists we have to make sure the ISO-8859-1 gets converted to UTF-8
-	        	String encodedWithISO88591 = rs.getString("term");
-            	String decodedToUTF8 = new String(encodedWithISO88591.getBytes("ISO-8859-1"), "UTF-8");
-            	concept.setOldTranslation(rs.getString("conceptId"), decodedToUTF8, rs.getString("id"), AccRs.getString("acceptabilityId"));
+            	concept.setOldTranslation(rs.getString("conceptId"), rs.getString("term"), rs.getString("id"), AccRs.getString("acceptabilityId"));
 			}        
 		}
 		
 		if(language == "it"){
 			Statement stmt = conn.createStatement();
 	        ResultSet rs = stmt.executeQuery(queryGetITTerms);
-	        while (rs.next()) {
-	        	
+	        while (rs.next()) {	
 	        	String queryGetAcceptability = "SELECT `acceptabilityId` FROM `full_refset_Language` WHERE `referencedComponentId` ="+rs.getString("id");
         		Statement AccStmt = conn.createStatement();
         		ResultSet AccRs = AccStmt.executeQuery(queryGetAcceptability);
-	        	
-	        	//The encoding form MySQL is in ISO-8859-1. Before we can compare the two lists we have to make sure the ISO-8859-1 gets converted to UTF-8
-	        	String encodedWithISO88591 = rs.getString("term");
-            	String decodedToUTF8 = new String(encodedWithISO88591.getBytes("ISO-8859-1"), "UTF-8");
-            	concept.setOldTranslation(rs.getString("conceptId"), decodedToUTF8, rs.getString("id"), AccRs.getString("acceptabilityId"));	
+            	concept.setOldTranslation(rs.getString("conceptId"), rs.getString("term"), rs.getString("id"), AccRs.getString("acceptabilityId"));	
 			}
 		}	
 	}
@@ -108,7 +94,6 @@ public class DB_conncetion {
 	public static void getOverviewOfTranslationsDB(String conceptID) throws SQLException, UnsupportedEncodingException {
 		long start = System.currentTimeMillis();    
 		String queryGetInformation = "SELECT `conceptId`, `typeId`, `term`, `languageCode` FROM `full_description` WHERE active= 1 AND conceptID IN ("+conceptID+");";
-		
 		    Statement stmt = conn.createStatement();
 		    ResultSet rs = stmt.executeQuery(queryGetInformation);
 			long elapsedTime = System.currentTimeMillis() - start;
@@ -119,10 +104,8 @@ public class DB_conncetion {
 			start = System.currentTimeMillis();
 			//Puts the result set in the arrayList
             while (rs.next()) { 	
-            	//The encoding form MySQL is in ISO-8859-1. Before we can compare the two lists we have to make sure the ISO-8859-1 gets converted to UTF-8
-            	String encodedWithISO88591 = rs.getString("term");
-            	String decodedToUTF8 = new String(encodedWithISO88591.getBytes("ISO-8859-1"), "UTF-8");
-            	concept.setTranslationOverview(rs.getString("conceptId"), decodedToUTF8, rs.getString("typeId"), rs.getString("languageCode"));
+            	concept.setTranslationOverview(rs.getString("conceptId"), rs.getString("term"), rs.getString("typeId"), rs.getString("languageCode"));
+
 				}
             elapsedTime = System.currentTimeMillis() - start;
             System.out.println("Resultset in Array TranslationOverview gefüllt. Dauer: "+elapsedTime);
