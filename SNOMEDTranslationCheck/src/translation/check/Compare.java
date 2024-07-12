@@ -6,13 +6,12 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * This class creates the files for new, old, idnetical Translations. It can also create a overview with the existing translation in the SNOMED DB. 
+ * This class creates the files for new, old, identical Translations. It can also create a overview with the existing translation in the SNOMED DB. 
  */
 public class Compare {
 	
@@ -90,15 +89,12 @@ public class Compare {
 	public static void compare (String path) throws IOException{
 		List<String> header = new ArrayList<String>();
 		List<String> ChangeEntry= new ArrayList<String>();
-		List<String> JIRAtodo = new ArrayList<String>();
-		
 		header.add("Description ID");
 		header.add("Preferred Term (For reference only)");
 		header.add("Term (For reference only)");
 		header.add("Inactivation Reason");
 		DescriptionChanges.add(new ArrayList<String>(header));
 		header.clear();
-		
 		header.add("Concept ID");
 		header.add("GB/US FSN Term (For reference only)");
 		header.add("Preferred Term (For reference only)");
@@ -115,13 +111,9 @@ public class Compare {
 		header.add("Notes");
 		DecriptionAddition.add(new ArrayList<String>(header));
 		header.clear();
-		
-		
-		
 		header.add("|SCT ID|");
 		header.add("|FSN|");
 		header.add("|TODO|");
-		JIRAtask.add(new ArrayList<String>(header));
 		header.clear();
 		boolean NoDuplicate = true;
 
@@ -145,13 +137,6 @@ public class Compare {
 										}
 										}
 								}
-							if (NoDuplicate){
-//								JIRAtodo.add("|");
-//								JIRAtask.add(new ArrayList<String>(JIRAtodo));
-//								JIRAtodo.clear();
-								JIRAtodo.add("|"+compare.get(0)+"|"); //Adds SCT ID
-								JIRAtodo.add(compare.get(1)+"|"); //Adds
-							}
 							if(compare.get(8).equals("900000000000548007")){
 								newPreferredTerm.add(compare);
 								ChangeEntry.add(compareTO.get(2));
@@ -159,21 +144,15 @@ public class Compare {
 								ChangeEntry.add("Term");
 								ChangeEntry.add("Non-conformance to editorial policy");
 								DescriptionChanges.add(new ArrayList<String>(ChangeEntry));
-								JIRAtodo.add("* PT "+compareTO.get(1)+" inaktivieren \n");
-								JIRAtodo.add("* Neuer PT "+compare.get(3));
+
 							}else{
 								newSynonym.add(compare);
 								checkSynonym.add(compareTO);
 								DecriptionAddition.add(compare);
-								JIRAtodo.add("\n * Neues SYN "+compare.get(3));
 								}
-							JIRAtodo.add("|");
-							JIRAtask.add(new ArrayList<String>(JIRAtodo));
 							NoDuplicate=true;                                                                                                                                                                                                                                                                                                            
 							ChangeEntry.clear();
-							JIRAtodo.clear();
 					}
-						//NoDuplicate=true;
 						newTranslation=false;
 				}
 			}
@@ -253,15 +232,6 @@ public class Compare {
 			writer7.write(str.get(0)+"	"+str.get(1)+"	"+str.get(2)+"	"+str.get(3) + "	"+str.get(4)+ "	"+str.get(5)+"	"+str.get(6)+"	"+str.get(7)+"	"+str.get(8)+System.lineSeparator());
 		}
 		writer7.close();
-		
-		//Creates the JIRAtask file.
-				File JIRAtask2 = new File(path+"\\JIRAtask.tsv");
-				JIRAtask2.createNewFile();			
-				FileWriter writer8 = new FileWriter(JIRAtask2);
-				for (List<String> str : removeDuplicates(JIRAtask)) {
-					writer8.write(Arrays.toString(str.toArray())+ System.lineSeparator());
-				}
-				writer8.close();
 	}
 	
 	/**
@@ -282,6 +252,8 @@ public class Compare {
         return newList;
     }
 
+	
+	//TODO Remove duplicate EN synonyms
 	/**
 	 * This function creates a overview with the existing translations in the SNOMED DB. 
 	 * @param destination Destination path where to create the file.
@@ -303,9 +275,9 @@ public class Compare {
 		
 		//removes duplicates from the given CSV. This reduces the times the SQL-query needs to be executed.
 		List <List<String>> newTranslationCleaned = removeDuplicates(newTranslation);
-//		newTranslationCleaned.remove(0);
+		newTranslationCleaned.remove(0);
 		
-		
+		// Concatenates all the Concept IDs for the SQL query
 		long start = System.currentTimeMillis();    
 		for (List <String> conceptOverview : newTranslationCleaned){
 			if (conceptIDs == null) {
@@ -331,78 +303,124 @@ public class Compare {
 		long elapsedTime = System.currentTimeMillis() - start;
 		System.out.println("Query erstellt, druchgeführt und array befüllt. Dauer: "+elapsedTime);
 		Main.totalTime = Main.totalTime + elapsedTime;
+	
 		
 		//Structures the file to the desired schema
 		start = System.currentTimeMillis();
-		for (List<String> str : translationOverview) {
-			boolean containsNoTransltion = true; 
-			
-			for(List<String> check : structuredFile) {
-				//checks if the FSN are Identical
-				if(str.get(0).equals(check.get(0))) {
-					containsNoTransltion = false;
+
+			for (List<String> dbTerm : translationOverview) {
+				List<String> entry = new ArrayList<String>();
+				entry.add("TODO");
+				entry.add("TODO");
+				entry.add("TODO");
+				entry.add("TODO");
+				entry.add("TODO");
+				entry.add("TODO");
 					
-					//TODO Fügt bei der IT Spalte machmal den DE Begriff ein. Muss korrigiert werden.
-					//If the SCT-Id is identical it checks if the term is a FSN
-					if(str.get(2).equalsIgnoreCase("900000000000003001")) {						
-						check.add(1, str.get(1));
-					}else {
-						//If the term is not an FSN it checks the languageCode and places the term at desired position
-						if(str.get(3).equalsIgnoreCase("en")) {
-							check.add(2, str.get(1));
-						}else if(str.get(3).equalsIgnoreCase("de")) {
-							check.add(3, str.get(1));
-						}else if(str.get(3).equalsIgnoreCase("fr")){
-							check.add(4, str.get(1));
-						} else if (str.get(3).equalsIgnoreCase("it")){
-							check.add(5, str.get(1));
-						}
-					}	
-				}
-			}
+				//Return index of the inner list of structuredList. Now it nows on which index the concept ID is. 
+				int indexOfSCTID = findInnerListIndex(structuredFile, dbTerm.get(0));							
 				
-			//If the previous loop is done and no existing SCT ID is found in the structuredFile, it will be added.
-			if (containsNoTransltion) {
-					List<String> L = new ArrayList<String>();
-					L.add(0, str.get(0));
-					L.add("TODO");
-					L.add("TODO");
-					L.add("TODO");
-					L.add("TODO");
-					L.add("TODO");
-					if(str.get(2).equalsIgnoreCase("900000000000003001")) {						
-						L.add(1, str.get(1));
-					}else {
-						//If the term is not an FSN it checks the languageCode and places the term at desired position
-						if(str.get(3).equalsIgnoreCase("en")) {						
-							L.add(2, str.get(1));
-						}else if(str.get(3).equalsIgnoreCase("de")) {
-							L.add(3, str.get(1));
-						}else if(str.get(3).equalsIgnoreCase("fr")){
-							L.add(4, str.get(1));
-						} else if (str.get(3).equalsIgnoreCase("it")){
-							L.add(5, str.get(1));
+				//This means the concept ID is not present in the structuredFile list. So a new row is added in the structuredList.
+				if(indexOfSCTID ==-1) {
+					entry.set(0, dbTerm.get(0));
+					if(dbTerm.get(2).equalsIgnoreCase("900000000000003001")) {						
+						entry.set(1, dbTerm.get(1));
+					}else{
+						if(dbTerm.get(3).equalsIgnoreCase("en")) {
+							entry.set(2, dbTerm.get(1));
+						}else if(dbTerm.get(3).equalsIgnoreCase("de")) {
+							entry.set(3, dbTerm.get(1));	
+						}else if(dbTerm.get(3).equalsIgnoreCase("fr")){
+							entry.set(4, dbTerm.get(1));
+						}else if (dbTerm.get(3).equalsIgnoreCase("it")){
+							entry.set(5, dbTerm.get(1));
 						}
 					}
-					structuredFile.add(L);
+					structuredFile.add(entry);
+				}else {
+					List<String> structuredFileElement = structuredFile.get(indexOfSCTID);
+					
+					if(dbTerm.get(2).equalsIgnoreCase("900000000000003001")) {						
+						structuredFileElement.set(1, dbTerm.get(1));
+					}else {
+						if(dbTerm.get(3).equalsIgnoreCase("en")) {
+							if(structuredFileElement.get(2).equalsIgnoreCase("TODO")) {
+								structuredFileElement.set(2, dbTerm.get(1));
+							} else {
+								if(structuredFileElement.get(2).contains(dbTerm.get(1))) {
+									continue;
+								}
+								structuredFileElement.set(2, structuredFileElement.get(2)+" | "+dbTerm.get(1));
+							}
+						}else if(dbTerm.get(3).equalsIgnoreCase("de")) {
+							if(structuredFileElement.get(3).equalsIgnoreCase("TODO")) {
+								structuredFileElement.set(3, dbTerm.get(1));
+							}else {
+								if(structuredFileElement.get(3).contains(dbTerm.get(1))) {
+									continue;
+								}
+								structuredFileElement.set(3, structuredFileElement.get(3)+" | "+dbTerm.get(1));
+							}					
+						}else if(dbTerm.get(3).equalsIgnoreCase("fr")){
+							if(structuredFileElement.get(4).equalsIgnoreCase("TODO")) {
+								structuredFileElement.set(4, dbTerm.get(1));
+							}else {
+								if(structuredFileElement.get(4).contains(dbTerm.get(1))) {
+									continue;
+								}
+								structuredFileElement.set(4, structuredFileElement.get(4)+" | "+dbTerm.get(1));
+							}
+						} else if (dbTerm.get(3).equalsIgnoreCase("it")){
+							if(structuredFileElement.get(5).equalsIgnoreCase("TODO")) {
+								structuredFileElement.set(5, dbTerm.get(1));
+							}	else {
+								if(structuredFileElement.get(5).contains(dbTerm.get(1))) {
+									continue;
+								}
+								structuredFileElement.set(4, structuredFileElement.get(4)+" | "+dbTerm.get(1));
+							}
+						}
+				}
+					structuredFile.set(indexOfSCTID, structuredFileElement);
 				}
 			}
+
 		elapsedTime = System.currentTimeMillis() - start;
 		Main.totalTime = Main.totalTime + elapsedTime;
 		System.out.println("File nach gewünschter Struktur strukturiert. Dauer: "+elapsedTime);
-		
+
+		structuredFile.add(0, new ArrayList<String>(header));
 		//Creates the TranslationOverview file.
 		File translationOverviewFile = new File(destination+"\\TranslationOverview.csv");
 		translationOverviewFile.createNewFile();			
 		FileWriter writer = new FileWriter(translationOverviewFile);
 		System.out.println("File in erstellt und starte mit Befüllung.");
 		start = System.currentTimeMillis();
-		for (List<String> str : structuredFile) {
-			writer.write(str.get(0)+"	"+str.get(1)+"	"+str.get(2) +"	"+str.get(3)+"	"+str.get(4)+"	"+str.get(5) + System.lineSeparator());
-			}
+		 for (List<String> str : structuredFile) {
+             StringBuilder line = new StringBuilder();
+             for (int i = 0; i < str.size(); i++) {
+                 line.append(str.get(i));
+                 if (i < str.size() - 1) {
+                     line.append("\t"); // Add a tab if it's not the last element
+                 }
+             }
+             writer.write(line.toString());
+             writer.write(System.lineSeparator());
+         }
 		writer.close();
 		elapsedTime = System.currentTimeMillis() - start;
 		System.out.println("File erstellt. Dauer: "+elapsedTime);
 		Main.totalTime = Main.totalTime + elapsedTime;
 	}
+		
+	   	//Used to find the index of the concept that is already in the structuredList.
+	   	private static int findInnerListIndex(List<List<String>> outerList, String element) {
+	        for (int i = 0; i < outerList.size(); i++) {
+	            List<String> innerList = outerList.get(i);
+	            if (innerList.contains(element)) {
+	                return i; // Return the index of the inner list
+	            }
+	        }
+	        return -1; // Return -1 if the element is not found in any inner list
+	    }
 }
