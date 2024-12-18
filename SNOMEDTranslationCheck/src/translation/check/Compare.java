@@ -157,7 +157,29 @@ public class Compare {
 		Compare.eszettList.add(L);
 	}
    
-    // Optimized method to create translations overview file
+	
+	/**
+	 * Generates a translations overview file named `TranslationOverview.tsv` that consolidates translation data 
+	 * for a given set of concept IDs. The file includes translations in English, German, French, and Italian, 
+	 * and is structured with a header and rows containing relevant data.
+	 *
+	 * ### Process:
+	 * 1. Prepares a header row with columns: 
+	 *    - "Concept ID", "GB/US FSN Term (For reference only)", "Preferred Term (For reference only)",
+	 *      "Translated Term DE", "Translated Term FR", "Translated Term IT".
+	 * 2. Collects unique concept IDs from the `newTranslation` list.
+	 * 3. Queries the database to retrieve detailed translation data for the collected concept IDs.
+	 * 4. Constructs the translation overview file by:
+	 *    - Adding new rows for concept IDs not already in the file.
+	 *    - Updating existing rows with additional translation data when available.
+	 *    - Ensuring multiple translations for the same term are concatenated with a separator (" | ").
+	 * 5. Writes the constructed data into the `TranslationOverview.tsv` file.
+	 *
+	 * @param destination The directory path where the overview file will be saved.
+	 * @throws IOException            If an error occurs during file operations.
+	 * @throws ClassNotFoundException If the database driver class cannot be found.
+	 * @throws SQLException           If an error occurs during database queries.
+	 */
     public void createTranslationsOverview(String destination) throws IOException, ClassNotFoundException, SQLException {
         List<String> header = Arrays.asList("Concept ID", "GB/US FSN Term (For reference only)", "Preferred Term (For reference only)",
                 "Translated Term DE", "Translated Term FR", "Translated Term IT");
