@@ -1,4 +1,4 @@
-package translation.check;
+// package src.translation.check;
 
 import java.sql.*;
 import java.util.*;
@@ -23,8 +23,8 @@ import java.io.UnsupportedEncodingException;
 public class DB_connection {
 
     // JDBC driver and connection settings
-	static String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static String SERVER_URL = "jdbc:mysql://localhost/ch:sct-june24?useUnicode=true&characterEncoding=UTF-8";
+	static String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
+	static String SERVER_URL = "jdbc:mariadb://localhost:3306/SCT?useUnicode=true&characterEncoding=UTF-8";
 	static String USERNAME = "root";
 	static String PASSWORD = "";
 	private Connection connection;

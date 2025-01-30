@@ -2,6 +2,8 @@ package translation.check;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -47,7 +49,7 @@ public class ReadTranslation {
 	public static void readFile(String csvFile) throws IOException {
 		long start = System.currentTimeMillis();
 
-		try (CSVReader csvReader = new CSVReaderBuilder(new FileReader(csvFile)).withCSVParser(parser).build()) {
+		try (CSVReader csvReader = new CSVReaderBuilder(new FileReader(csvFile, Charset.forName("Cp1252"))).withCSVParser(parser).build()) {
 
 			// Determine the file type and process accordingly
 			String fileType = checkFilePathExtension(csvFile);
@@ -125,16 +127,18 @@ public class ReadTranslation {
 	private static void processAdditionFile(CSVReader csvReader) throws IOException {
 		System.out.println("Processing `Additions.tsv` file...");
 		csvReader.skip(1); // Skip the first row (headers)
-		
-		
 
+
+		int counter = 0;
 		for (String[] row : csvReader) {
+			counter++;
 			if (language == null){
 			language= row[4];
 			}
 			concept.setNewTranslations(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9],
 					row[10], row[11], row[12], row[13], row[14], row[15], row[16], row[17]);
 		}
+		System.out.println("counter: " + counter);
 	}
 
 	/**

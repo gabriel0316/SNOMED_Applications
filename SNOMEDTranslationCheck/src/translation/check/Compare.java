@@ -1,4 +1,5 @@
-package translation.check;
+// package src.translation.check;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
