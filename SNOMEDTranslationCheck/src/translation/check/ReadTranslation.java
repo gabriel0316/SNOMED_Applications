@@ -1,4 +1,4 @@
-package translation.check;
+// package src.translation.check;
 
 import java.io.FileReader;
 import java.io.IOException;
