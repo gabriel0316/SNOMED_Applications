@@ -90,6 +90,20 @@ public class Compare {
 		Compare.newTranslation.add(L);
 		Compare.language = language_Code;
 	}
+	
+	public void setNewTranslations(String conceptId, String term, String language_Code,
+			String case_Significance, String acceptabilityId, String descriptionID) {
+		List<String> L = new ArrayList<String>();
+		L.add(conceptId);
+		L.add(term);
+		L.add(language_Code);
+		L.add(case_Significance);
+		L.add("SYNONYM"); //TODO: braucht mich das???
+		L.add(acceptabilityId);
+		L.add(descriptionID);
+		Compare.newTranslation.add(L);
+		Compare.language = language_Code;
+	}
 
 	// For method overloading. Allowing to just read the SCT ID form a file.
 	public void setNewTranslations(String conceptId) {
@@ -136,12 +150,13 @@ public class Compare {
 	}
 
 	// Used to create overview file with content from the DB
-	public void setTranslationOverview(String conceptId, String term, String typeId, String languageCode) {
+	public void setTranslationOverview(String conceptId, String term, String typeId, String languageCode, String status) {
 		List<String> L = new ArrayList<String>();
 		L.add(conceptId);
 		L.add(term);
 		L.add(typeId);
 		L.add(languageCode);
+		L.add(status);
 		Compare.translationOverview.add(L);
 	}
 	
@@ -181,7 +196,7 @@ public class Compare {
 	 * @throws SQLException           If an error occurs during database queries.
 	 */
     public void createTranslationsOverview(String destination) throws IOException, ClassNotFoundException, SQLException {
-        List<String> header = Arrays.asList("Concept ID", "GB/US FSN Term (For reference only)", "Preferred Term (For reference only)",
+        List<String> header = Arrays.asList("Concept ID","Status", "GB/US FSN Term (For reference only)", "Preferred Term (For reference only)",
                 "Translated Term DE", "Translated Term FR", "Translated Term IT");
         List<List<String>> structuredFile = new ArrayList<>();
         structuredFile.add(new ArrayList<>(header));
@@ -205,16 +220,16 @@ public class Compare {
 
         // Using HashMap to map language codes to column indices
         Map<String, Integer> languageColumnMap = new HashMap<>();
-        languageColumnMap.put("en", 2);
-        languageColumnMap.put("de", 3);
-        languageColumnMap.put("fr", 4);
-        languageColumnMap.put("it", 5);
+        languageColumnMap.put("en", 3);
+        languageColumnMap.put("de", 4);
+        languageColumnMap.put("fr", 5);
+        languageColumnMap.put("it", 6);
 
 
         for (List<String> dbTerm : translationOverview) {
             // Make a copy of the row to avoid modifying the original list (which may be the header)
 
-            List<String> entry = new ArrayList<>(Collections.nCopies(6, "TODO"));
+            List<String> entry = new ArrayList<>(Collections.nCopies(7, "TODO"));
 
             // Return index of the inner list of structuredFile. Now it knows on which index the concept ID is.
             int indexOfSCTID = findInnerListIndex(structuredFile, dbTerm.get(0));
@@ -222,6 +237,7 @@ public class Compare {
             // If concept ID is not found, add a new row to structuredFile
             if (indexOfSCTID == -1 && structuredFile.size() > 0) {
                 entry.set(0, dbTerm.get(0));
+                entry.set(2, dbTerm.get(4));
                 if ("900000000000003001".equalsIgnoreCase(dbTerm.get(2))) {
                     entry.set(1, dbTerm.get(1));
                 } else {

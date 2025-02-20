@@ -11,9 +11,9 @@ import java.sql.SQLException;
  */
 public class Main {
 
-	private static String CSVfilePath = "PATH_TO_TSV_FILE";
+	private static String CSVfilePath = "C:\\Users\\Pero Grgic\\Downloads\\Unbenannte Tabelle - Tabellenblatt1.Inactivations.tsv";
 	//Path where to create the three files (identicalTranslation, newSynonym, noTranslation)
-	private static String destination ="DESTINATION_FOR_NEW_FILE";
+	private static String destination ="C:\\Users\\Pero Grgic\\Downloads";
 
 	public static long totalTime;
 
@@ -24,7 +24,7 @@ public class Main {
 			ReadTranslation.readFile(CSVfilePath);	
 			Compare compare = new Compare();
 			//Uncomment the needed methods.
-//			compare.createTranslationsOverview(destination);
+			compare.createTranslationsOverview(destination);
 //			compare.generateDeltaDescAdditions(destination);
 //			compare.generateDeltaDescInactivation(destination);
 //			compare.checkEszettInExtension(destination);

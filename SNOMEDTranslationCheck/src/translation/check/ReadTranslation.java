@@ -64,6 +64,9 @@ public class ReadTranslation {
 			case "Inactivations.tsv":
 				processInactivationFile(csvReader);
 				break;
+			case ".txt":
+				processRF2File(csvReader);
+				break;
 			default:
 				System.out.println(fileType + "... Resuming with SNOMED International Template");
 				processSnomedTemplate(csvReader);
@@ -166,6 +169,20 @@ public class ReadTranslation {
 	}
 
 	/**
+	 * Processes SNOMED International Template files, applying acceptability rules.
+	 */
+	private static void processRF2File(CSVReader csvReader) throws IOException {
+		System.out.println("Processing `.txt` file...");
+		csvReader.skip(1); // Skip the first row (headers)
+
+		for (String[] row : csvReader) {
+			concept.setNewTranslations(row[4]);	
+		}
+	}
+	
+	
+	
+	/**
 	 * Identifies the file type based on its extension.
 	 *
 	 * @param filePath The path of the file.
@@ -177,6 +194,7 @@ public class ReadTranslation {
 		fileExtensions.put(".termspace.csv", ".termspace.csv");
 		fileExtensions.put("Additions.tsv", "Additions.tsv");
 		fileExtensions.put("Inactivations.tsv", "Inactivations.tsv");
+		fileExtensions.put(".txt", ".txt");
 
 		return fileExtensions.keySet().stream().filter(filePath::endsWith).findFirst().map(fileExtensions::get)
 				.orElse("Unknown file type");

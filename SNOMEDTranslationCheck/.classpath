@@ -6,10 +6,8 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/grgic/Desktop/eHS/jars/mssql-jdbc-12.6.3.jre11.jar"/>
-	<classpathentry kind="lib" path="C:/Users/grgic/Desktop/eHS/jars/opencsv-5.9.jar"/>
-	<classpathentry kind="lib" path="C:/Users/grgic/Desktop/eHS/jars/commons-lang3-3.14.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/grgic/Desktop/eHS/jars/mysql-connector-j-9.0.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Pero Grgic/Desktop/eHS/JAR/opencsv-5.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pero Grgic/Desktop/eHS/JAR/mysql-connector-j-9.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pero Grgic/Desktop/eHS/JAR/commons-lang3-3.17.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

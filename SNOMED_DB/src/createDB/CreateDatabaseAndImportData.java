@@ -7,14 +7,14 @@ public class CreateDatabaseAndImportData {
 	
 	// Driver needed to connect to the SNOMED database
 	public static Connection conn = null;
-	static String ReleaseFilePath= "PATH_TO_INT_EDITION";
-	static String ReleaseFilePathCH= "PATH_TO_CH_EXTENSION";
-	static String ReleaseDate="RELEASE_DATE_INTERNATIONAL";
-	static String ReleaseDateCH="CH1000195_RELEASE_DATE_CH_EXTENSION";
+	static String ReleaseFilePath= "C:\\\\Users\\\\Pero Grgic\\\\Desktop\\\\eHS\\\\SNOMED\\\\SNOMED DB\\\\Swiss Extension Dez 24\\\\SnomedCT_InternationalRF2_PRODUCTION_20250101T120000Z\\\\SnomedCT_InternationalRF2_PRODUCTION_20250101T120000Z";
+	static String ReleaseFilePathCH= "C:\\\\Users\\\\Pero Grgic\\\\Desktop\\\\eHS\\\\SNOMED\\\\SNOMED DB\\\\Swiss Extension Dez 24\\\\SnomedCT_ManagedServiceCH_PRODUCTION_CH1000195_20241207T120000Z";
+	static String ReleaseDate="20250101";
+	static String ReleaseDateCH="CH1000195_20241207";
 
 	    public static void main(String[] args) {
 	        // Datenbankverbindung konfigurieren
-	        String dbName = "SCT:CH_June24";
+	        String dbName = "SCT:CH_Dec24";
 	        String jdbcDriver = "com.mysql.cj.jdbc.Driver";
 	    	
 	    	
@@ -25,6 +25,7 @@ public class CreateDatabaseAndImportData {
 	    	String multiQueries="?allowMultiQueries=true";
 	    	String allowLoadLocalInfile= "allowLoadLocalInfile=true";
 
+	    	
 
 	        try {
 	        	

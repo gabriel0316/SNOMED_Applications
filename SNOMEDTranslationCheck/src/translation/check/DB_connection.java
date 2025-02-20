@@ -105,7 +105,7 @@ public class DB_connection {
 		long start = System.currentTimeMillis();
 		connect();
 		// Base query for retrieving translation information
-		String baseQuery = "SELECT `conceptId`, `typeId`, `term`, `languageCode` FROM `full_description` WHERE active = 1 AND conceptID";
+		String baseQuery = "SELECT `conceptId`, `typeId`, `term`, `languageCode`, `active` FROM `full_description` WHERE active = 1 AND conceptID";
 
 		// Generate batched queries for concept IDs
 		List<String> batchedQueries = buildBatchedQueries(conceptIDs, baseQuery, "conceptId");
@@ -114,16 +114,13 @@ public class DB_connection {
 			try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
 
 				long elapsedTime = System.currentTimeMillis() - start;
-				System.out.println("Query executed. Duration: " + elapsedTime + " ms");
 				Main.totalTime += elapsedTime;
 
 				// Process the result set and add entries to TranslationOverview
 				while (rs.next()) {
-					String encodedTerm = rs.getString("term");
-					String decodedTerm = new String(encodedTerm.getBytes("ISO-8859-1"), "UTF-8");
-
-					CONCEPT.setTranslationOverview(rs.getString("conceptId"), decodedTerm, rs.getString("typeId"),
-							rs.getString("languageCode"));
+					String term = rs.getString("term");
+					CONCEPT.setTranslationOverview(rs.getString("conceptId"), term, rs.getString("typeId"),
+							rs.getString("languageCode"), rs.getString ("active"));
 				}
 			}
 		}
