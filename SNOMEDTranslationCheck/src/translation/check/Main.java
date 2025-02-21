@@ -11,9 +11,9 @@ import java.sql.SQLException;
  */
 public class Main {
 
-	private static String CSVfilePath = "C:\\Users\\Pero Grgic\\Downloads\\Unbenannte Tabelle - Tabellenblatt1.Inactivations.tsv";
+	private static String CSVfilePath = "PATH_TO_FILE";
 	//Path where to create the three files (identicalTranslation, newSynonym, noTranslation)
-	private static String destination ="C:\\Users\\Pero Grgic\\Downloads";
+	private static String destination ="PATH_TO_DESTINATION";
 
 	public static long totalTime;
 

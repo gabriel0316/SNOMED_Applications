@@ -33,10 +33,7 @@ public class ReadTranslation {
 
 	// Acceptability ID based on translation preferences
 	static String acceptabilityID = null;
-
-	// Custom CSV parser configuration
-	static CSVParser parser = new CSVParserBuilder().withSeparator('\t') // Use tab as a separator
-			.withQuoteChar('"').withEscapeChar('\\').withStrictQuotes(false).build();
+	
 
 	/**
 	 * Reads a CSV file and populates the `Compare` class with the extracted data.
@@ -46,11 +43,18 @@ public class ReadTranslation {
 	 */
 	public static void readFile(String csvFile) throws IOException {
 		long start = System.currentTimeMillis();
+		
+		// Bestimme Dateityp und Separator
+	    Object[] fileInfo = checkFilePathExtension(csvFile);
+	    String fileType = (String) fileInfo[0];
+	    char separator = (char) fileInfo[1];
+		
+		CSVParser parser = new CSVParserBuilder().withSeparator(separator) // Use tab as a separator
+				.withQuoteChar('"').withEscapeChar('\\').withStrictQuotes(false).build();
 
 		try (CSVReader csvReader = new CSVReaderBuilder(new FileReader(csvFile)).withCSVParser(parser).build()) {
 
-			// Determine the file type and process accordingly
-			String fileType = checkFilePathExtension(csvFile);
+			
 			switch (fileType) {
 			case ".porpcsv.csv":
 				processPropCsv(csvReader);
@@ -62,6 +66,11 @@ public class ReadTranslation {
 				processAdditionFile(csvReader);
 				break;
 			case "Inactivations.tsv":
+				System.out.println("Processing `Inactivations.tsv` file...");
+				processInactivationFile(csvReader);
+				break;
+			case ".simpleOverview.csv":
+				System.out.println("Processing `simpleOverview.csv` file...");
 				processInactivationFile(csvReader);
 				break;
 			case ".txt":
@@ -144,7 +153,6 @@ public class ReadTranslation {
 	 * Processes `Inactivations.tsv` files, extracting basic inactivation details.
 	 */
 	private static void processInactivationFile(CSVReader csvReader) throws IOException {
-		System.out.println("Processing `Inactivations.tsv` file...");
 		csvReader.skip(1); // Skip the first row (headers)
 
 		for (String[] row : csvReader) {
@@ -180,23 +188,27 @@ public class ReadTranslation {
 		}
 	}
 	
-	
-	
 	/**
 	 * Identifies the file type based on its extension.
 	 *
 	 * @param filePath The path of the file.
 	 * @return The identified file type or "Unknown file type" if no match is found.
 	 */
-	public static String checkFilePathExtension(String filePath) {
-		Map<String, String> fileExtensions = new HashMap<>();
-		fileExtensions.put(".porpcsv.csv", ".porpcsv.csv");
-		fileExtensions.put(".termspace.csv", ".termspace.csv");
-		fileExtensions.put("Additions.tsv", "Additions.tsv");
-		fileExtensions.put("Inactivations.tsv", "Inactivations.tsv");
-		fileExtensions.put(".txt", ".txt");
+	public static Object[] checkFilePathExtension(String filePath) {
+		Map<String, Character> fileExtensions = new HashMap<>();
+		fileExtensions.put(".porpcsv.csv", ';');
+		fileExtensions.put(".termspace.csv", '\t');
+		fileExtensions.put("Additions.tsv", '\t');
+		fileExtensions.put("Inactivations.tsv", '\t');
+		fileExtensions.put(".txt", ';');
+		fileExtensions.put(".simpleOverview.csv", ';');
 
-		return fileExtensions.keySet().stream().filter(filePath::endsWith).findFirst().map(fileExtensions::get)
-				.orElse("Unknown file type");
+		for (Map.Entry<String, Character> entry : fileExtensions.entrySet()) {
+	        if (filePath.endsWith(entry.getKey())) {
+	            return new Object[]{entry.getKey(), entry.getValue()};
+	        }
+	    }
+
+		return new Object[]{"Unknown file type", '\t'}; // Standardwert für unbekannte Dateitypen
 	}
 }
