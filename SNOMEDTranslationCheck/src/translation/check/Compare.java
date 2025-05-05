@@ -392,12 +392,6 @@ public class Compare {
 		ReadTranslation.language = languageCode;
 		ReadTranslation.readFile(CSVfilePath);
 
-		// Create a copy of the new translation list
-		List<List<String>> newTranslationCopy = new ArrayList<>();
-		for (List<String> row : Compare.newTranslation) {
-			newTranslationCopy.add(new ArrayList<>(row));
-		}
-
 		// Check if the lists are null
 
 		if (newTranslation == null || oldTranslation == null) {
@@ -407,32 +401,59 @@ public class Compare {
 		//////////////////////
 		// Manipulation of list (only for DE imports) according to special requirements
 		if ("DE".equalsIgnoreCase(languageCode)) {
-			// Changing language code from EN to DE and making sure it's the Swiss German
-			// language reference set
-			String targetLanguageRefSetId = "2041000195100";
-			int languageCodeIndex = 4; // "Language Code"
+		    String targetLanguageRefSetId = "2041000195100";
+		    int languageCodeIndex = 4; // Index for the "Language Code" field
+		    int termIndex = 3;         // Index for the "Term" field
+		    int refSetIdIndex = 7;     // Index for the "Language Refset ID" field
 
-			for (List<String> row : newTranslation) {
-				if (row.size() > languageCodeIndex) {
-					// Change language code from EN to DE
-					if ("EN".equals(row.get(languageCodeIndex))) {
-						boolean hasTargetLanguageRefSet = row.stream()
-								.anyMatch(cell -> cell.equals(targetLanguageRefSetId));
-						if (hasTargetLanguageRefSet) {
-							row.set(languageCodeIndex, "DE");
-						}
-					}
+		    for (List<String> row : newTranslation) {
+		        // Replace "ß" with "ss" in the term
+		        if (row.size() > termIndex) {
+		            String term = row.get(termIndex);
+		            if (term != null && term.contains("ß")) {
+		                row.set(termIndex, term.replace("ß", "ss"));
+		            }
+		        }
 
-					// Replace "ß" with "ss" in the term
-					if (row.size() > 3) { // Assuming the term is at index 3
-						String term = row.get(3);
-						if (term != null && term.contains("ß")) {
-							row.set(3, term.replace("ß", "ss"));
-						}
-					}
-				}
-			}
+		        // Ensure language code is set to "DE"
+		        while (row.size() <= languageCodeIndex) {
+		            row.add("");
+		        }
+		        row.set(languageCodeIndex, "DE");
+
+		        // Ensure language reference set ID is set correctly
+		        while (row.size() <= refSetIdIndex) {
+		            row.add("");
+		        }
+		        row.set(refSetIdIndex, targetLanguageRefSetId);
+		    }
+
+		    // Final validation: check for correct language code, refset ID, and absence of "ß"
+		    long total = newTranslation.size();
+		    List<List<String>> invalidRows = new ArrayList<>();
+
+		    for (List<String> row : newTranslation) {
+		        boolean isValid = row.size() > refSetIdIndex
+		            && "DE".equalsIgnoreCase(row.get(languageCodeIndex))
+		            && targetLanguageRefSetId.equals(row.get(refSetIdIndex))
+		            && (row.get(termIndex) == null || !row.get(termIndex).contains("ß"));
+
+		        if (!isValid) {
+		            invalidRows.add(row);
+		        }
+		    }
+
+		    if (!invalidRows.isEmpty()) {
+		        System.err.println("Warning: Some entries do not meet the requirements:");
+		        for (List<String> row : invalidRows) {
+		            System.err.println(row);
+		        }
+		        System.err.println("Invalid entries: " + invalidRows.size() + " / " + total);
+		    } else {
+		        System.out.println("All " + total + " entries correctly set to language code 'DE', refset ID '2041000195100' and contain no 'ß'.");
+		    }
 		}
+
 
 		dbConnection.searchTranslations(); // Fetch translations from the database and populate oldTranslation
 
