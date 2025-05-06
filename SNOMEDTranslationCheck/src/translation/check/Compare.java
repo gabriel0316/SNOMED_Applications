@@ -415,11 +415,11 @@ public class Compare {
 		            }
 		        }
 
-		        // Ensure language code is set to "DE"
+		        // Ensure language code is set to "de"
 		        while (row.size() <= languageCodeIndex) {
 		            row.add("");
 		        }
-		        row.set(languageCodeIndex, "DE");
+		        row.set(languageCodeIndex, "de");
 
 		        // Ensure language reference set ID is set correctly
 		        while (row.size() <= refSetIdIndex) {
