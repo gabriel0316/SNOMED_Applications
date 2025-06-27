@@ -94,7 +94,7 @@ public class ReadTranslation {
 					break;
 				case ".simpleOverview.tsv":
 					System.out.println("Processing `.simpleOverview.tsv` file...");
-					processInactivationFile(csvReader);
+					simpleOverviewFile(csvReader);
 					break;
 				case ".txt":
 					System.out.println("Processing RF2 file...");
@@ -174,6 +174,7 @@ public class ReadTranslation {
 		csvReader.skip(1); // Skip the first row (headers)
 
 		for (String[] row : csvReader) {
+			System.out.println("row[0]: " + row[0]);
 			concept.setNewInactivations(row[0], row[2], language); // Only description ID is needed
 		}
 	}
@@ -184,6 +185,14 @@ public class ReadTranslation {
 
 		for (String[] row : csvReader) {
 			concept.setNewInactivations(row[0], row[2], language); // Only concept ID and term are needed
+		}
+	}
+	
+	private static void simpleOverviewFile(CSVReader csvReader) throws IOException { // to handle TS check
+		csvReader.skip(1); // Skip the first row (headers)
+
+		for (String[] row : csvReader) {
+			concept.setCheckForTranslation(row[0]); // Only concept ID and term are needed
 		}
 	}
 

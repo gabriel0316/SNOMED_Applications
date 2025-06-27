@@ -27,7 +27,7 @@ public class DB_connection {
 
 	// JDBC driver and connection settings
 	static String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static String SERVER_URL = "jdbc:mysql://localhost/sct:ch_beta_juni25?useUnicode=true&characterEncoding=UTF-8";
+	static String SERVER_URL = "jdbc:mysql://localhost/SCT:CH_PreProdJune25?useUnicode=true&characterEncoding=UTF-8";
 	static String USERNAME = "root";
 	static String PASSWORD = "";
 	private Connection connection;
@@ -72,38 +72,79 @@ public class DB_connection {
 	 * @throws IllegalArgumentException     if an unsupported language code is
 	 *                                      provided
 	 */
-	public void searchTranslations() throws SQLException, UnsupportedEncodingException, ClassNotFoundException {
+	public void searchTranslations(Set<String> conceptIDs) throws SQLException, UnsupportedEncodingException, ClassNotFoundException {
 		connect();
 
-		String query = """
-				  	SELECT
-				    d.id,
-				    d.conceptId,
-				    d.term,
-				    d.languageCode,
-				    d.typeId,
-				    d.caseSignificanceId,
-				    d.effectiveTime,
-				    d.active AS descriptionActive,
-				    c.active AS conceptActive,
-				    l.acceptabilityId
-				FROM
-				    full_description d
-				LEFT JOIN
-				    full_concept c ON d.conceptId = c.id
-				LEFT JOIN
-				    full_refset_Language l ON d.id = l.referencedComponentId
-				WHERE
-				    d.languageCode = ?
-				      """;
-
-		try (PreparedStatement stmt = connection.prepareStatement(query)) {
-			stmt.setString(1, ReadTranslation.language);
-			try (ResultSet rs = stmt.executeQuery()) {
-				processTranslationResultSet(rs);
+//		String query = """
+//				  	SELECT
+//				    d.id,
+//				    d.conceptId,
+//				    d.term,
+//				    d.languageCode,
+//				    d.typeId,
+//				    d.caseSignificanceId,
+//				    d.effectiveTime,
+//				    d.active AS descriptionActive,
+//				    c.active AS conceptActive,
+//				    l.acceptabilityId
+//				FROM
+//				    full_description d
+//				LEFT JOIN
+//				    full_concept c ON d.conceptId = c.id
+//				LEFT JOIN
+//				    full_refset_Language l ON d.id = l.referencedComponentId
+//				WHERE
+//				    d.languageCode = ?
+//				      """;
+		
+		String baseQuery = """
+			    SELECT
+			        d.id,
+			        d.conceptId,
+			        d.term,
+			        d.languageCode,
+			        d.typeId,
+			        d.caseSignificanceId,
+			        d.effectiveTime,
+			        d.active AS descriptionActive,
+			        c.active AS conceptActive,
+			        l.acceptabilityId
+			    FROM
+			        full_description d
+			    LEFT JOIN (
+			        SELECT
+			            fc1.*
+			        FROM
+			            full_concept fc1
+			        INNER JOIN (
+			            SELECT
+			                id,
+			                MAX(effectiveTime) AS max_time
+			            FROM
+			                full_concept
+			            GROUP BY
+			                id
+			        ) latest
+			        ON fc1.id = latest.id
+			        AND fc1.effectiveTime = latest.max_time
+			    ) c
+			    ON d.conceptId = c.id
+			    LEFT JOIN
+			        full_refset_Language l
+			        ON d.id = l.referencedComponentId
+			    WHERE
+			        d.conceptId
+			""";
+		// Generate batched queries for concept IDs
+		List<String> batchedQueries = buildBatchedQueries(conceptIDs, baseQuery);
+		
+		for (String query : batchedQueries) {
+			try (PreparedStatement stmt = connection.prepareStatement(query)) {
+				try (ResultSet rs = stmt.executeQuery()) {
+					processTranslationResultSet(rs);
+				}
 			}
 		}
-
 		disconnect();
 		System.out.println("Translation search completed for language: " + ReadTranslation.language);
 	}
@@ -122,15 +163,45 @@ public class DB_connection {
 		long start = System.currentTimeMillis();
 		connect();
 		// Base query for retrieving translation information
-		String baseQuery = "SELECT fc.active, fd.conceptId, fd.typeId, fd.term, fd.languageCode\r\n"
-				+ "FROM full_concept fc\r\n" + "JOIN (\r\n" + "    SELECT id, MAX(effectiveTime) AS max_time\r\n"
-				+ "    FROM full_concept\r\n" + "    GROUP BY id\r\n"
-				+ ") latest ON fc.id = latest.id AND fc.effectiveTime = latest.max_time\r\n"
-				+ "JOIN full_description fd ON fc.id = fd.conceptId\r\n" + "WHERE fd.active = 1 \r\n" + "AND fc.id";
+//		String baseQuery = "SELECT fc.active, fd.conceptId, fd.typeId, fd.term, fd.languageCode\r\n"
+//				+ "FROM full_concept fc\r\n" + "JOIN (\r\n" + "    SELECT id, MAX(effectiveTime) AS max_time\r\n"
+//				+ "    FROM full_concept\r\n" + "    GROUP BY id\r\n"
+//				+ ") latest ON fc.id = latest.id AND fc.effectiveTime = latest.max_time\r\n"
+//				+ "JOIN full_description fd ON fc.id = fd.conceptId\r\n" + "WHERE fd.active = 1 \r\n" + "AND fc.id";
+		//TODO: Testen ob neue Query funktioniert
+		String baseQuery = """
+			    SELECT
+			        fc.active,
+			        fd.conceptId,
+			        fd.typeId,
+			        fd.term,
+			        fd.languageCode
+			    FROM
+			        full_concept fc
+			    JOIN (
+			        SELECT
+			            id,
+			            MAX(effectiveTime) AS max_time
+			        FROM
+			            full_concept
+			        GROUP BY
+			            id
+			    ) latest
+			        ON fc.id = latest.id
+			        AND fc.effectiveTime = latest.max_time
+			    JOIN
+			        full_description fd
+			        ON fc.id = fd.conceptId
+			    WHERE
+			        fd.active = 1
+			    AND
+			        fc.id
+			""";
 
 		// Generate batched queries for concept IDs
 		List<String> batchedQueries = buildBatchedQueries(conceptIDs, baseQuery);
-
+		
+		Compare.translationOverview.clear();
 		for (String query : batchedQueries) {
 			try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
 
@@ -138,6 +209,7 @@ public class DB_connection {
 				Main.totalTime += elapsedTime;
 
 				// Process the result set and add entries to TranslationOverview
+				
 				while (rs.next()) {
 					String term = rs.getString("term");
 					CONCEPT.setTranslationOverview(rs.getString("conceptId"), term, rs.getString("typeId"),

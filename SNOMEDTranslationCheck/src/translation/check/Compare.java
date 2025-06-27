@@ -453,21 +453,51 @@ public class Compare {
 		        System.out.println("All " + total + " entries correctly set to language code 'DE', refset ID '2041000195100' and contain no 'ß'.");
 		    }
 		}
-
-
-		dbConnection.searchTranslations(); // Fetch translations from the database and populate oldTranslation
-
+		
+		// Use a Set to store unique concept IDs
+		Set<String> conceptID = new HashSet<>();
+		for (List<String> conceptIDset : newTranslation) {
+			if (!conceptIDset.isEmpty()) {
+				conceptID.add(conceptIDset.get(0));
+			}
+		}
+		/////////////////////////////////
+		
+		System.out.println("starting to fetch translations from the database for " + conceptID.size() + " concept IDs.");
+		dbConnection.searchTranslations(conceptID); // Fetch translations from the database and populate oldTranslation
+		System.out.println("Translations fetched from the database. Starting to compare new and old translations...");
+		
+		System.out.println("Old translations size: " + oldTranslation.size());
+		// Collect all inactive conceptId|term combinations from oldTranslation
+		Set<String> inactiveEntries = Compare.oldTranslation.stream()
+			    .filter(entry -> "0".equals(entry.get(1))) // only inactive entries
+			    .map(entry -> entry.get(0)) // conceptId|term|languageCode
+			    .collect(Collectors.toSet());
+		System.out.println("Inactive entries collected: " + inactiveEntries.size());
+		
+		// Collect all known translations as hashes to detect duplicates
 		Set<String> oldTranslationsSet = oldTranslation.stream()
-				.map(entry -> generateHash(entry.get(0) + "|" + entry.get(4))) // Assuming entry.get(0) = conceptId and
-																				// entry.get(4) = term
+			    .map(entry -> generateHash(entry.get(0) + "|" + entry.get(4) + "|" + entry.get(5))) // conceptId|term|languageCode
 				.collect(Collectors.toSet());
+		
+		// Build deltaTranslations by filtering newTranslation
+		List<List<String>> deltaTranslations = newTranslation.stream()
+			    .filter(entry -> {
+			        String conceptId = entry.get(0);
 
-		// Delta filter
-		List<List<String>> deltaTranslations = newTranslation.stream().filter(entry -> {
-			String newKey = entry.get(0) + "|" + entry.get(3); // conceptId + term
-			return !oldTranslationsSet.contains(generateHash(newKey));
-		}).collect(Collectors.toList());
+			        // If concept is inactive, exclude it
+			        if (inactiveEntries.contains(conceptId)) {
+			            return false;
+			        }
 
+			        String term = entry.get(3);
+			        String NewlanguageCode = entry.get(4);
+
+			        String newKeyHash = generateHash(conceptId + "|" + term + "|" + NewlanguageCode);
+			        return !oldTranslationsSet.contains(newKeyHash);
+			    })
+			    .collect(Collectors.toList());
+		
 		writeDeltaFile(outputFilePath, deltaTranslations);
 	}
 
