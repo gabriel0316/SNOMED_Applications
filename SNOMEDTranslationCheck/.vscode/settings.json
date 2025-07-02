@@ -1,0 +1,10 @@
+{
+    "java.project.sourcePaths": [
+        "src\\translation\\check"
+    ],
+    "java.project.referencedLibraries": [
+        "c:\\Users\\someuser\\Downloads\\mariadb-java-client-3.5.1.jar", // TODO absoluter pfad zu den jars, dann kommentar löschen
+        "c:\\Users\\someuser\\Downloads\\opencsv-5.10.jar", // TODO absoluter pfad zu den jars, dann kommentar löschen
+        "c:\\Users\\someuser\\Downloads\\commons-lang3-3.17.0.jar" // TODO absoluter pfad zu den jars, dann kommentar löschen
+    ]
+}
