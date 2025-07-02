@@ -11,9 +11,11 @@ import java.sql.SQLException;
  */
 public class Main {
 
-	private static String CSVfilePath = "PATH_TO_TSV_FILE";
+	// TODO action required
+	private static String CSVfilePath = "C:\\Users\\someuser\\Downloads\\Austrian_terms_20250702115608264.tsv"; // Erstelle aus Termspace-export-Excel vom Arbeitsblatt "Descriptions_Additions" ein Tab separated file
 	//Path where to create the three files (identicalTranslation, newSynonym, noTranslation)
-	private static String destination ="DESTINATION_FOR_NEW_FILE";
+	// TODO action required
+	private static String destination ="C:\\Users\\someuser\\Downloads\\result_Additions_20250702"; // Verzeichnis in das geschrieben wird, muss zuvor existieren
 
 	public static long totalTime;
 
@@ -21,18 +23,18 @@ public class Main {
 		long StartTime = System.currentTimeMillis();
 
 		try {
-			ReadTranslation.readFile(CSVfilePath);	
+			ReadTranslation.readFile(CSVfilePath);
 			Compare compare = new Compare();
 			//Uncomment the needed methods.
-//			compare.createTranslationsOverview(destination);
-//			compare.generateDeltaDescAdditions(destination);
-//			compare.generateDeltaDescInactivation(destination);
-//			compare.checkEszettInExtension(destination);
+			// compare.createTranslationsOverview(destination);
+			compare.generateDeltaDescAdditions(destination);
+			// compare.generateDeltaDescInactivation(destination);
+			// compare.checkEszettInExtension(destination);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		long EndTime = System.currentTimeMillis();
 
 		System.out.println("Vorgang abgeschlossen. Dauer:" + (EndTime - StartTime));
-	}	
+	}
 }

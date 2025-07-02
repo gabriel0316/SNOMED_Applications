@@ -6,10 +6,10 @@ import java.io.UnsupportedEncodingException;
 
 /**
  * The DB_connection class facilitates interactions with the SNOMED CT database,
- * enabling retrieval and processing of translations in various languages. It 
- * supports querying concepts, descriptions, and translations while managing 
+ * enabling retrieval and processing of translations in various languages. It
+ * supports querying concepts, descriptions, and translations while managing
  * database connections efficiently.
- * 
+ *
  * <p>This class provides methods to:
  * <ul>
  *   <li>Connect and disconnect from the database.</li>
@@ -17,7 +17,7 @@ import java.io.UnsupportedEncodingException;
  *   <li>Handle specific linguistic features, such as terms containing "ß".</li>
  *   <li>Batch-process large sets of IDs for efficient querying.</li>
  * </ul>
- * 
+ *
  * <p>Author: Pero Grgic</p>
  */
 public class DB_connection {
@@ -26,11 +26,11 @@ public class DB_connection {
 	static String JDBC_DRIVER = "org.mariadb.jdbc.Driver";
 	static String SERVER_URL = "jdbc:mariadb://localhost:3306/SCT?useUnicode=true&characterEncoding=UTF-8";
 	static String USERNAME = "root";
-	static String PASSWORD = "";
+	static String PASSWORD = "root";
 	private Connection connection;
 	static Compare CONCEPT = new Compare();
-	
-	
+
+
     /**
      * Opens a new database connection.
      *
@@ -60,11 +60,11 @@ public class DB_connection {
         }
     }
 
-    
+
 	/**
-     * Searches for translations in the specified language, processes the results, 
+     * Searches for translations in the specified language, processes the results,
      * and populates the `translated` list in the Compare class.
-     * 
+     *
      * @param language the language code for translations (e.g., "de", "fr", "it")
      * @throws SQLException if a database access error occurs
      * @throws UnsupportedEncodingException if character encoding issues occur
@@ -82,7 +82,7 @@ public class DB_connection {
 		}
 
 		List<String> queries = buildBatchedQueries(conceptIds, baseQuery, "conceptId");
-		
+
 		for (String query : queries) {
             try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
                 processTranslationResultSet(rs);
@@ -90,16 +90,16 @@ public class DB_connection {
 		}
 		disconnect();
 	}
-	
-	
+
+
 	 /**
-     * Retrieves an overview of translations for a set of concept IDs, processing 
+     * Retrieves an overview of translations for a set of concept IDs, processing
      * the results into the TranslationOverview list.
-     * 
+     *
      * @param conceptIDs a set of concept IDs to retrieve translations for
      * @throws SQLException if a database access error occurs
      * @throws UnsupportedEncodingException if character encoding issues occur
-	 * @throws ClassNotFoundException 
+	 * @throws ClassNotFoundException
      */
 	public void getOverviewOfTranslationsDB(Set<String> conceptIDs) throws SQLException, ClassNotFoundException, UnsupportedEncodingException {
 		long start = System.currentTimeMillis();
@@ -129,12 +129,12 @@ public class DB_connection {
 		}
 		disconnect();
 	}
-	
-	
+
+
     /**
-     * Searches for descriptions by ID, populating the Compare class with 
+     * Searches for descriptions by ID, populating the Compare class with
      * information about newly found and missing descriptions.
-     * 
+     *
      * @param descriptionIds a set of description IDs to search for
      * @throws SQLException if a database access error occurs
      * @throws ClassNotFoundException if the JDBC driver is not found
@@ -160,7 +160,7 @@ public class DB_connection {
 	                System.out.println(descriptionID);
 	                    CONCEPT.setNewTranslations(descriptionID);  // Add to newTranslation list
 	                    notFoundIds.remove(descriptionID);          // Remove from notFoundIds if found
-	                
+
 	            }
 	        }
 	    }
@@ -175,11 +175,11 @@ public class DB_connection {
 	    }
 	}
 
-	
+
 	/**
      * Retrieves and processes concepts containing the character "ß" in their German
      * translations, adding them to the `EszettList` in the Compare class.
-     * 
+     *
      * @throws SQLException if a database access error occurs
      * @throws ClassNotFoundException if the JDBC driver is not found
      * @throws UnsupportedEncodingException if character encoding issues occur
@@ -199,7 +199,7 @@ public class DB_connection {
 				String term = new String(rs.getString("term"));
 				String caseSignificance = rs.getString("caseSignificanceId");
 				String acceptabilityId = rs.getString("acceptabilityId");
-				
+
 				// Call setEszettList with retrieved data
 				CONCEPT.setEszettList(conceptId, descId, active, type, term, caseSignificance, acceptabilityId);
 			}
@@ -209,12 +209,12 @@ public class DB_connection {
 		disconnect();
 	}
 
-	    
-	
+
+
     /**
-     * Constructs batched SQL queries for a set of IDs, optimizing query execution 
+     * Constructs batched SQL queries for a set of IDs, optimizing query execution
      * by dividing large sets into manageable chunks.
-     * 
+     *
      * @param ids a set of IDs to query (e.g., concept IDs or description IDs)
      * @param baseQuery the base SQL query without filtering (e.g., "SELECT ... WHERE")
      * @param idType the type of ID to query ("conceptId" or "descriptionId")
@@ -248,24 +248,24 @@ public class DB_connection {
 
 	    return queries;
 	}
-	
-	
+
+
 	/**
 	 * Processes the given `ResultSet` to extract translation data and populates the old translation data
-	 * for concepts. 
-	 * 
-	 * This method iterates through the rows of the provided `ResultSet` and retrieves relevant fields such as 
-	 * `conceptId`, `term`, `languageCode`, `caseSignificanceId`, and `acceptabilityId`. The extracted data is 
+	 * for concepts.
+	 *
+	 * This method iterates through the rows of the provided `ResultSet` and retrieves relevant fields such as
+	 * `conceptId`, `term`, `languageCode`, `caseSignificanceId`, and `acceptabilityId`. The extracted data is
 	 * passed to the `CONCEPT.setOldTranslation` method to populate the old translation entries for a concept.
-	 * 
-	 * @param rs The `ResultSet` object containing translation data retrieved from the database. Expected fields 
+	 *
+	 * @param rs The `ResultSet` object containing translation data retrieved from the database. Expected fields
 	 *           in the result set include:
 	 *           - `conceptId` (String): The unique identifier for the concept.
 	 *           - `term` (String): The term associated with the concept, which will be decoded before processing.
 	 *           - `languageCode` (String): The language code of the term.
 	 *           - `caseSignificanceId` (String): Specifies whether the term is case-sensitive.
 	 *           - `acceptabilityId` (String): Indicates the acceptability of the term in the given language.
-	 * 
+	 *
 	 * @throws SQLException If an error occurs while accessing the `ResultSet` object.
 	 */
     private void processTranslationResultSet(ResultSet rs) throws SQLException {
@@ -288,5 +288,5 @@ public class DB_connection {
             );
         }
     }
-    
+
 }

@@ -4,13 +4,17 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 
 public class CreateDatabaseAndImportData {
-	
+
 	// Driver needed to connect to the SNOMED database
 	public static Connection conn = null;
-	static String ReleaseFilePath= "PATH_TO_INT_EDITION";
-	static String ReleaseFilePathCH= "PATH_TO_CH_EXTENSION";
-	static String ReleaseDate="RELEASE_DATE_INTERNATIONAL";
-	static String ReleaseDateCH="CH1000195_RELEASE_DATE_CH_EXTENSION";
+	// TODO adapt
+	static String ReleaseFilePath= "C:\\\\Users\\\\someuser\\\\Downloads\\\\SnomedCT_InternationalRF2_PRODUCTION_20250501T120000Z"; // Verzeichnis des entpackten International Releases
+	// TODO adapt
+	static String ReleaseFilePathCH= "C:\\\\Users\\\\someuser\\\\Downloads\\\\SnomedCT_ManagedServiceAT_PRODUCTION_AT1000234_20250215T120000Z"; // Verzeichnis der entpackten Austrian Extension
+	// TODO adapt
+	static String ReleaseDate="20250501"; // Release Date vom International Release (siehe im entpackten Verzeichnis Readme_en_20250501.txt -> da ist das datum im dateinamen)
+	// TODO adapt
+	static String ReleaseDateCH="AT1000234_20250215"; // Release Date von der AT Extension (siehe im entpackten Verzeichnis Snapshot\Refset\Content\der2_cRefset_AssociationSnapshot_AT1000234_20250215.txt -> da ist AT1000234_20250215 das datum)
 
 	    public static void main(String[] args) {
 	        // Datenbankverbindung konfigurieren
@@ -20,7 +24,7 @@ public class CreateDatabaseAndImportData {
 
 	    	//Credential for the connection
 	    	String dbUser = "root";
-	    	String dbPassword = "";
+	    	String dbPassword = "root";
 	    	String dbURL = "jdbc:mariadb://localhost:3306/";
 	    	String multiQueries="?allowMultiQueries=true";
 	    	String allowLoadLocalInfile= "allowLoadLocalInfile=true";
