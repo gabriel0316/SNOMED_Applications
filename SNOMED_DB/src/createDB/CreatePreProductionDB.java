@@ -7,8 +7,8 @@ public class CreatePreProductionDB {
 	
 	// Driver needed to connect to the SNOMED database
 	public static Connection conn = null;
-	static String ReleaseFilePath= "C:\\\\Users\\\\Pero Grgic\\\\Desktop\\\\eHS\\\\SNOMED\\\\SNOMED DB\\\\Swiss Extension Beta Juni 25\\\\SnomedCT_InternationalRF2_PRODUCTION_20250401T120000Z\\\\SnomedCT_InternationalRF2_PRODUCTION_20250401T120000Z";
-	static String ReleaseFilePathCH= "C:\\\\Users\\\\Pero Grgic\\\\Desktop\\\\eHS\\\\SNOMED\\\\SNOMED DB\\\\PreProduction Juni 25\\\\xSnomedCT_ManagedServiceCH_PREPRODUCTION_CH1000195_20250607T120000Z";
+	static String ReleaseFilePath= "PATH_TO_YOUR_INTERNATIONAL_EDITION";
+	static String ReleaseFilePathCH= "PATH_TO_YOUR_PREPRODUCTION_EXTENSION";
 	static String ReleaseDate="20250401";
 	static String ReleaseDateCH="CH1000195_20250607";
 
