@@ -17,6 +17,7 @@
       3. ReleaseDate
       4. ReleaseDateCH (corresponds to AT release)
       5. dbPassword
+      6. classpathentry (path for kind="lib")
    2. run
 6. SNOMEDTranslationCheck
    1. DB_connection.java
