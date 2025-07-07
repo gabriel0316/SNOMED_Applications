@@ -20,9 +20,10 @@
       6. classpathentry (path for kind="lib")
    2. run
 6. SNOMEDTranslationCheck
-   1. DB_connection.java
+   1. set paths to dependencies in .vscode\settings.json
+   2. DB_connection.java
       1. set PASSWORD
-   2. Main.java
+   3. Main.java
       1. Analyse Additions (run)
          1. set CSVFilePath to full path of "Additions.tsv"
          2. set destination to full path of output directory -> will later contain "Delta.tsv"
