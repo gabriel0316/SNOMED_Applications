@@ -87,11 +87,11 @@ public class ReadTranslation {
 				case "Inactivations.tsv":
 					System.out.println("Processing `Inactivations.tsv` file...");
 					processInactivationFile(csvReader);
-					break;
-				case "Check_inactivation.tsv":
-					System.out.println("Processing `Check_inactivation.tsv` file...");
-					processInactivationFile2(csvReader);
-					break;
+//					break;
+//				case "Check_inactivation.tsv":
+//					System.out.println("Processing `Check_inactivation.tsv` file...");
+//					processInactivationFile2(csvReader);
+//					break;
 				case ".simpleOverview.tsv":
 					System.out.println("Processing `.simpleOverview.tsv` file...");
 					simpleOverviewFile(csvReader);
@@ -100,7 +100,7 @@ public class ReadTranslation {
 					System.out.println("Processing RF2 file...");
 					processDescriptionRF2File(csvReader);
 					break;
-				default:
+ 				default:
 					System.out.println(fileType + "... Resuming with SNOMED International Template");
 					processSnomedTemplate(csvReader);
 					break;
@@ -175,18 +175,18 @@ public class ReadTranslation {
 
 		for (String[] row : csvReader) {
 			System.out.println("row[0]: " + row[0]);
-			concept.setNewInactivations(row[0], row[2], language); // Only description ID is needed
+			concept.setNewInactivations(row[0], row[4], language, row[2]); // Only description ID is needed
 		}
 	}
 
-	private static void processInactivationFile2(CSVReader csvReader) throws IOException { // to handle TS check
-																							// inactivation
-		csvReader.skip(1); // Skip the first row (headers)
-
-		for (String[] row : csvReader) {
-			concept.setNewInactivations(row[0], row[2], language); // Only concept ID and term are needed
-		}
-	}
+//	private static void processInactivationFile2(CSVReader csvReader) throws IOException { // to handle TS check
+//																							// inactivation
+//		csvReader.skip(1); // Skip the first row (headers)
+//
+//		for (String[] row : csvReader) {
+//			concept.setNewInactivations(row[0], row[2], language); // Only concept ID and term are needed
+//		}
+//	}
 	
 	private static void simpleOverviewFile(CSVReader csvReader) throws IOException { // to handle TS check
 		csvReader.skip(1); // Skip the first row (headers)
@@ -244,32 +244,29 @@ public class ReadTranslation {
 
 				while (rowIterator.hasNext()) {
 					Row row = rowIterator.next();
-					String[] values = new String[18];
+					String conceptId = getCellAsString(row.getCell(0));
+					String fsn = getCellAsString(row.getCell(1));
+					String pt = getCellAsString(row.getCell(2));
+					String term = getCellAsString(row.getCell(3));
+					String language_Code = getCellAsString(row.getCell(4));
+					String case_Significance = getCellAsString(row.getCell(5));
+					String type = getCellAsString(row.getCell(6));
+					String language_reference_set = getCellAsString(row.getCell(7));
+					String acceptabilityId = getCellAsString(row.getCell(8));
+					String language_reference_set2 = getCellAsString(row.getCell(9));
+					String acceptabilityId2 = getCellAsString(row.getCell(10));
+					String language_reference_set3 = getCellAsString(row.getCell(11));
+					String acceptabilityId3 = getCellAsString(row.getCell(12));
+					String language_reference_set4 = getCellAsString(row.getCell(13));
+					String acceptabilityId4 = getCellAsString(row.getCell(14));
+					String language_reference_set5 = getCellAsString(row.getCell(15));
+					String acceptabilityId5 = getCellAsString(row.getCell(16));
+					String notes = getCellAsString(row.getCell(17));				
 
-					for (int i1 = 0; i1 < 18; i1++) {
-						Cell cell = row.getCell(i1, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-						switch (cell.getCellType()) {
-						case STRING:
-							values[i1] = cell.getStringCellValue();
-							break;
-						case NUMERIC:
-							values[i1] = String.valueOf(cell.getNumericCellValue());
-							break;
-						case BOOLEAN:
-							values[i1] = String.valueOf(cell.getBooleanCellValue());
-							break;
-						case FORMULA:
-							values[i1] = cell.getCellFormula(); // You can evaluate it if needed
-							break;
-						default:
-							values[i1] = "";
-							break;
-						}
-					}
-
-					concept.setNewTranslations(values[0], values[1], values[2], values[3], values[4], values[5],
-							values[6], values[7], values[8], values[9], values[10], values[11], values[12], values[13],
-							values[14], values[15], values[16], values[17]);
+					concept.setNewTranslations(conceptId, fsn, pt, term, language_Code, case_Significance, type,
+							language_reference_set, acceptabilityId, language_reference_set2, acceptabilityId2,
+							language_reference_set3, acceptabilityId3, language_reference_set4, acceptabilityId4,
+							language_reference_set5, acceptabilityId5, notes);
 				}
 				break;
 
@@ -283,34 +280,13 @@ public class ReadTranslation {
 				}
 
 				while (rowIterator1.hasNext()) {
-					Row row = rowIterator1.next();
-					String[] values = new String[3];
 
-					for (int i2 = 0; i2 < 3; i2++) {
-						Cell cell = row.getCell(i2, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-						switch (cell.getCellType()) {
-						case STRING:
-							values[i2] = cell.getStringCellValue();
-							break;
-						case NUMERIC:
-							values[i2] = String.valueOf(cell.getNumericCellValue());
-							break;
-						case BOOLEAN:
-							values[i2] = String.valueOf(cell.getBooleanCellValue());
-							break;
-						case FORMULA:
-							values[i2] = cell.getCellFormula(); // You can evaluate it if needed
-							break;
-						default:
-							values[i2] = "";
-							break;
-						}
-					}
+					 Row row = rowIterator1.next();
+					 String descriptionId = getCellAsString(row.getCell(0));
+					 String term = getCellAsString(row.getCell(2));
+					 String conceptId = getCellAsString(row.getCell(9));
 
-					if (language == null) {
-						language = values[4];
-					}
-					concept.setNewInactivations(values[0], values[2], language);
+					    concept.setNewInactivations(descriptionId, term, language, conceptId); //Language is not used here, but can be added if needed
 				}
 				break;
 
@@ -356,5 +332,25 @@ public class ReadTranslation {
 		// Return default for unknown file types
 		return new Object[] { "Unknown file type", '\t' };
 	}
+	
+	
+	private static String getCellAsString(Cell cell) {
+	    if (cell == null) {
+	        return "";
+	    }
+	    switch (cell.getCellType()) {
+	        case STRING:
+	            return cell.getStringCellValue();
+	        case NUMERIC:
+	            return String.valueOf(cell.getNumericCellValue());
+	        case BOOLEAN:
+	            return String.valueOf(cell.getBooleanCellValue());
+	        case FORMULA:
+	            return cell.getCellFormula();
+	        default:
+	            return "";
+	    }
+	}
+	
 
 }
