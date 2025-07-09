@@ -227,12 +227,13 @@ public class Compare {
 		Compare.newTranslation.add(L);
 	}
 
-	public void setNewInactivations(String id, String term, String langageCode) {
+	public void setNewInactivations(String descriptionId, String term, String langageCode, String conceptId) {
 		List<String> L = new ArrayList<String>();
-		L.add(id);
+		L.add(descriptionId);
 		L.add(langageCode);
 		L.add(""); // placeholder for PT
 		L.add(term);
+		L.add(conceptId);
 		Compare.newInactivation.add(L);
 	}
 
@@ -529,56 +530,58 @@ public class Compare {
 		}
 	}
 
-	/**
-	 * Generates two TSV files ('NotFoundDescriptionIDs.tsv' and
-	 * 'FoundDescriptionIDs.tsv') based on description IDs found or not found in the
-	 * database.
-	 * 
-	 * The input data is expected to follow the SNOMED International template for
-	 * inactivating descriptions. The method processes the provided translations,
-	 * checks for their presence in the database, and creates the respective files
-	 * in the specified output directory.
-	 * 
-	 * Output Files: - **NotFoundDescriptionIDs.tsv**: Contains descriptions that
-	 * are not found in the database. - **FoundDescriptionIDs.tsv**: Contains
-	 * descriptions that are found in the database.
-	 * 
-	 * @param outputDirectoryPath The directory where the output files will be
-	 *                            created. The directory will be created if it does
-	 *                            not already exist.
-	 * @throws IOException            If an I/O error occurs while creating or
-	 *                                writing the output files.
-	 * @throws ClassNotFoundException If the JDBC driver is not found.
-	 * @throws SQLException           If a database error occurs during the query
-	 *                                execution.
-	 */
-	public void generateDeltaDescInactivation(String CSVfilePath, String outputDirectoryPath, String languageCode)
+	  /**
+     * Generates a TSV file containing the processed description inactivations.
+     * <p>
+     * The input data is expected to follow the SNOMED International template 
+     * or TermSpace template for inactivating descriptions. 
+     * The method loads the CSV file, normalizes certain characters 
+     * (e.g., replacing 'ß' with 'ss'), queries the database 
+     * for matching descriptions, and writes the
+     * final results into a single output file.
+     *
+     * <p>Output File:
+     * <ul>
+     *   <li><strong>Description_Inactivation_File.tsv</strong>: Contains the list of descriptions prepared for inactivation.</li>
+     * </ul>
+     *
+     * @param CSVfilePath          The path to the input CSV file.
+     * @param outputDirectoryPath  The directory where the output file will be created.
+     * @param languageCode         The language code to use for filtering descriptions.
+     * @throws IOException             If an I/O error occurs while creating or writing the output file.
+     * @throws ClassNotFoundException  If the JDBC driver is not found.
+     * @throws SQLException            If a database error occurs during query execution.
+     */
+	public void generateDeltaDescInactivation(String CSVfilePath, String outputDirectoryPath)
 			throws IOException, ClassNotFoundException, SQLException {
 
-		ReadTranslation.language = languageCode;
 		ReadTranslation.readFile(CSVfilePath);
-
+		
+		int termIndex = 3; // Index of the term in the newInactivation list
 		List<List<String>> newIactivation2 = new ArrayList<>();
+		
 		for (List<String> row : Compare.newInactivation) {
+			  if (row.size() > termIndex) {
+				 
+		            String term = row.get(termIndex);
+		            if (term != null && term.contains("ß")) {
+		            	// Replace the special character 'ß' with 'ss'
+		                row.set(termIndex, term.replace("ß", "ss"));
+		            }
+		      }
 			newIactivation2.add(new ArrayList<>(row));
 		}
+	
 		Compare.newInactivation.clear();
-
+		
+        // Query the database for description records matching the input
 		dbConnection.searchDescriptions(newIactivation2);
-
-		Set<List<String>> uniqueOldTranslations = new HashSet<>(oldIactivation);
+		
+        // Remove duplicate rows (based on all columns)
 		Set<List<String>> uniqueNewTranslations = new HashSet<>(newInactivation);
-		Set<List<String>> checkInTermspace = new HashSet<>(newIactivation2);
-
-		File oldInactivationFile = new File(outputDirectoryPath + "\\NotFoundDescriptionIDs.tsv");
-		File newInactivationFile = new File(outputDirectoryPath + "\\FoundDescriptionIDs.tsv");
-		File checkInTermspaceFile = new File(outputDirectoryPath + "\\CheckDescriptionInTermspace.tsv");
-
-		oldInactivationFile.getParentFile().mkdirs();
-
-		writeTranslationInactivationFile(oldInactivationFile, uniqueOldTranslations);
+		
+		File newInactivationFile = new File(outputDirectoryPath + "\\Description_Inactivation_File.tsv");
 		writeTranslationInactivationFile(newInactivationFile, uniqueNewTranslations);
-		writeTranslationInactivationFile(checkInTermspaceFile, checkInTermspace);
 	}
 
 	/**
@@ -633,40 +636,6 @@ public class Compare {
 		writeTranslationAdditionFile(ssAdditionFile, ssAdditionSet);
 	}
 
-	/**
-	 * Generates a file containing the found translation terms for inactivation. The
-	 * file is named `Found_TS_inactivation.tsv` and is created in the specified
-	 * output directory. - Benchmark: approximately 1.5 minutes for 1,300
-	 * descriptions to check.
-	 * 
-	 * @param outputDirectoryPath The directory where the output file will be
-	 *                            created.
-	 * @param languageCode        The language code used for the translations.
-	 * @throws ClassNotFoundException If the database driver class cannot be found.
-	 * @throws SQLException           If an error occurs during database operations.
-	 * @throws IOException            If an error occurs while writing to the file.
-	 */
-	public void generateDeltaTScheckInactivation(String CSVfilePath, String outputDirectoryPath, String languageCode)
-			throws ClassNotFoundException, SQLException, IOException {
-		ReadTranslation.language = languageCode;
-		ReadTranslation.readFile(CSVfilePath);
-
-		List<List<String>> newIactivation2 = new ArrayList<>();
-		for (List<String> row : Compare.newInactivation) {
-			newIactivation2.add(new ArrayList<>(row));
-		}
-		Compare.newInactivation.clear();
-
-		dbConnection.searchDescriptionsForInactivationTS(newIactivation2);
-		Set<List<String>> foundInactivationTS = new HashSet<>(newInactivation);
-
-		File foundTSinactivationFile = new File(outputDirectoryPath + "\\Found_TS_inactivation.tsv");
-
-		foundTSinactivationFile.getParentFile().mkdirs();
-
-		writeTranslationInactivationFile(foundTSinactivationFile, foundInactivationTS);
-	}
-
 	public void createDelta(String outputDirectoryPath) throws ClassNotFoundException, IOException, SQLException {
 		// TODO:Method is intended to be used for the delta creation but is not finished yet
 //    	generateDeltaDescAdditions(outputDirectoryPath, true);
@@ -689,7 +658,7 @@ public class Compare {
 	private void writeTranslationInactivationFile(File file, Set<List<String>> translations) throws IOException {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writer.write(
-					"Description ID Or Term\tLanguage Code (require if the term is specified)\tPreferred Term (For reference only)\tTerm (For reference only)\tInactivation Reason\tAssociation Target ID1\tAssociation Target ID2\tAssociation Target ID3\tAssociation Target ID4\tNotes\n");
+					"Description ID Or Term\tLanguage Code (require if the term is specified)\tConcept ID (Optional)\tPreferred Term (For reference only)\tTerm (For reference only)\tInactivation Reason\tAssociation Target ID1\tAssociation Target ID2\tAssociation Target ID3\tAssociation Target ID4\tNotes\n");
 			for (List<String> entry : translations) {
 				writer.write(String.join("\t", entry) + "\n");
 			}
