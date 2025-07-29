@@ -1,7 +1,5 @@
 # 🧾 LEVI for SNOMED
 
-## 📌 Project Title
-
 **LEVI for SNOMED** – *Language and Extension Validation & Import for SNOMED*
 
 ## 📝 Description
