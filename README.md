@@ -80,7 +80,6 @@ Adjustable settings:
       DeltaGenerator.java
       FileParser.java
       ExtensionLookup.java
-README.md
 ```
 
 ## 📦 Dependencies
