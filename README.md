@@ -80,11 +80,6 @@ Adjustable settings:
       DeltaGenerator.java
       FileParser.java
       ExtensionLookup.java
-/resources
-  config.properties
-examples
-  input_sample.xlsx
-  output_delta_import.csv
 README.md
 ```
 
