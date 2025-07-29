@@ -25,49 +25,31 @@ LEVI for SNOMED is a utility tool that acts as a bridge between the SNOMED Inter
 ### Installation Steps
 
 ```bash
-git clone https://github.com/your-org/levi-for-snomed.git
-cd levi-for-snomed
-mvn clean install
-java -jar target/levi-for-snomed.jar
+git clone https://github.com/your-org/SNOMED_Applications.git
 ```
-
-## 🧪 Usage
-
-Run LEVI from the command line with the input file:
-
-```bash
-java -jar target/levi-for-snomed.jar --input translations.xlsx --lang fr
-```
-
-Optional flags:
-
-- `--lang [de|fr|it]`: Specify language
-- `--dry-run`: Simulates output without writing files
-
-Example input and output files are available in the `/examples` folder.
+- Open Eclipse IDE
+- Select "Import > Existing Projects into Workspace"
+- Choose the cloned levi-for-snomed folder
+- Run Main.java as a Java application
 
 ## 🧩 Architecture / Technical Overview
 
 LEVI consists of the following major components:
 
-- `Main.java`: Entry point for CLI processing
-- `TranslationChecker.java`: Performs validation and language checks
-- `DeltaGenerator.java`: Generates delta import templates
-- `FileParser.java`: Handles input in CSV/TSV/Excel format
-- `ExtensionLookup.java`: Connects to SNOMED extension DB for comparison
-
-A component diagram or UML class diagram can be added here for deeper technical documentation.
+- `Main.java`: Entry point of the application. Initializes the Compare class and triggers one of the comparison or analysis functions.
+- `Compare.java`: Core logic controller. Manages internal lists (e.g., new translations, inactivations, synonyms) and orchestrates the entire flow of analysis, comparison, and result generation.
+- `DB_connection.java`: Encapsulates all database communication using JDBC. Provides helper methods for querying.
+- `ReadTranslation.java`: Parses CSV files containing translation data and passes the content to Compare via setter methods.
+<img width="2508" height="964" alt="image" src="https://github.com/user-attachments/assets/c52e27ea-6f91-4369-b02a-9296c96f21ec" />
 
 ## ⚙️ Configuration
 
-Configuration is managed via `config.properties` or CLI arguments.
-
 Adjustable settings:
 
-- Database connection string
+- Database connection
 - Language selection
 - Input/output paths
-- Regex patterns for term validation
+
 
 ## 📂 Folder / File Structure
 
