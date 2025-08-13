@@ -12,7 +12,8 @@ import java.sql.SQLException;
 public class Main {
 
 	// TODO action required
-	private static String CSVfilePath = "C:\\Users\\someuser\\Downloads\\Austrian_terms_20250702115608264.tsv"; // Erstelle aus Termspace-export-Excel vom Arbeitsblatt "Descriptions_Additions" ein Tab separated file
+	// IMPORTANT for Additions the filename has to end with "Additions.tsv"
+	private static String CSVfilePath = "C:\\Users\\someuser\\Downloads\\Austrian_terms_20250702115608264_Additions.tsv"; // Erstelle aus Termspace-export-Excel vom Arbeitsblatt "Descriptions_Additions" ein Tab separated file
 	//Path where to create the three files (identicalTranslation, newSynonym, noTranslation)
 	// TODO action required
 	private static String destination ="C:\\Users\\someuser\\Downloads\\result_Additions_20250702"; // Verzeichnis in das geschrieben wird, muss zuvor existieren
