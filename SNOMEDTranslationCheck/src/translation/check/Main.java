@@ -12,23 +12,18 @@ import java.sql.SQLException;
  */
 public class Main {
 
-	private static String CSVfilePath = "PATH_TO_INPUT_FILE"; // Path to the CSV/Excel file with the terms to be compared
-																	// with the SNOMED database
-	private static String destination = "DESTINATION_PATH"; // Path where to create the three files
-
-	public static long totalTime;
-
+	private static Conf conf = new Conf();
+	private static CompareManager compareManager = new CompareManager();
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
 		try {
-			Compare compare = new Compare();
-			// Uncomment the needed methods.
-//			compare.createTranslationsOverview(CSVfilePath, destination);
-			compare.generateDeltaDescAdditions(CSVfilePath, destination, "de");
-//			compare.generateDeltaDescInactivation(CSVfilePath, destination, "LANGUAGE_CODE");
-//			compare.generateDeltaTScheckInactivation(CSVfilePath, destination, "LANGUAGE_CODE");
-//			compare.checkEszettInExtension(destination);
-//			compare.createDelta(destination); --> not implemented yet
+
+//			compareManager.runTranslationOverview(conf.getFilePathCurrent(), conf.getDestination());
+			compareManager.runDeltaDescAdditions(conf.getFilePathCurrent(), conf.getDestination());
+//			compareManager.runDeltaDescInactivations(conf.getFilePathCurrent(), conf.getDestination());
+//			compareManager.runGenerateDelta(conf.getFilePathCurrent(), conf.getDestination());
+//			compareManager.runCheckEszettInExtension(conf.getDestination());
+//			compareManager.runDeltaNotPublishedTranslations(conf.getFilePathCurrent(), conf.getFilePathPrevious(), conf.getDestination());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
